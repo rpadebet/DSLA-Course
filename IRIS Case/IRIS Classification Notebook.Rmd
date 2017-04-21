@@ -1,0 +1,136 @@
+---
+title: "Hello World of Machine Learning in R : IRIS Classification"
+output: html_notebook
+---
+
+### Hello World of Machine Learning
+This is a good project because it is so well understood.
+
+- Attributes are numeric so you have to figure out how to load and handle data.
+- It is a classification problem, allowing you to practice with perhaps an easier type of supervised learning algorithms.
+- It is a mutli-class classification problem (multi-nominal) that may require some specialized handling.
+- It only has 4 attribute and 150 rows, meaning it is small and easily fits into memory.
+- It gives an opportunity to apply many Machine Learning algorithms, to compare and contrast
+
+---
+
+### Installing the required packages
+We need to load a few important packages first to begin our analysis
+
+#### *CARET Package* 
+The caret package provides a consistent interface into hundreds of machine learning algorithms and provides useful convenience methods for data visualization, data resampling, model tuning and model comparison, among other features. It’s a must have tool for machine learning projects in R. [Refer][3]
+
+#### *TIDYR Package:*  
+Is a new package that makes it easy to “tidy” your data. Tidy data is data that’s easy to work with: it’s easy to munge (*with dplyr*), visualise (*with ggplot2 or ggvis*) and model (with R’s hundreds of modelling packages). The two most important properties of tidy data are:
+
+- Each column is a variable.
+- Each row is an observation.
+
+Arranging your data in this way makes it easier to work with because you have a consistent way of referring to variables (as column names) and observations (as row indices).
+[Refer][2]
+
+```{r}
+install.packages("caret")
+install.packages("tidyr")
+```
+
+---
+
+### Data
+#### *About the data set*
+The Iris flower data set or Fisher's Iris data set is a multivariate data set introduced by the British statistician and biologist Ronald Fisher in his 1936 paper. This is a very famous and widely used dataset by everyone trying to learn machine learning and statistics. The data set consists of 50 samples from each of three species of Iris (Iris setosa, Iris virginica and Iris versicolor). Four features were measured from each sample: the length and the width of the sepals and petals, in centimetres. The fifth column is the species of the flower observed. For more history of this dataset read here [Wikipedia](https://en.wikipedia.org/wiki/Iris_flower_data_set)
+
+---
+
+#### *Load the dataset*
+We are going to do the following
+
+- Load the iris data directly from within R (*This dataset is so famous it comes with your R installation!*).
+- Download and Load the data from a file. (*This is usually what you have to do for other problems*)
+- Split the data into a training dataset and a testing dataset to perform machine learning (*This is a standard 2 way split in machine learning. We could also do a 3 way split: training, validation and testing*)
+
+---
+
+#### *Loading the data from within R*
+```{r}
+# Attach the dataset to the environment
+data(iris)
+# Get help on the data
+help(iris)
+# Rename the data
+iris_dataset<-iris
+# View the data
+View(iris_dataset)
+```
+
+#### *Loading the data from external source*
+In most cases you will work with, the data file is usually hosted somewhere on the internet which you might have to download and read the file into the R environment/memory before you can start working with it. It is also good practice to download the files from directly within your R script whenever possible because it makes your work more shareable and reproducible by others. The code below illustrates how this data is downloaded from the [UCI Machine Learning repository](https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data)
+
+```{r}
+# set the url for download
+url<-"https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data"
+# set the filename and directory to download into
+filename<-"./Data/iris.csv"
+# Download the file
+download.file(url=url, destfile = filename, method ="curl")
+print("IRIS File downloaded")
+```
+
+
+Next we need to read the data from the file
+```{r}
+# Read the file into the R environment
+iris_filedata<-read.csv(file = filename,header = FALSE,sep = ",")
+```
+
+
+Viewing the data from within the R console - Useful when dealing with larger datasets
+```{r}
+# View the top few rows of the data in R console
+head(iris_filedata,7)
+```
+
+
+We see here that the data has no names for the columns (they are assigned names such as V1, V2, V3 etc). So next, we will assign names to these columns
+```{r}
+# Assigning meaningful column names
+colnames(iris_filedata)<-c("Sepal.Length","Sepal.Width","Petal.Length","Petal.Width","Species")
+head(iris_filedata,5)
+```
+
+---
+
+#### *Splitting the Data into Training and Testing Sets*
+This is one of the most important steps and concepts in Machine Learning. Before we do any meaningful work and learn from the dataset available to us, we need to split the dataset into `training set` and `testing set` and sometimes into a third `validation set`.
+
+**TRAINING SET:** Is the `SEEN DATA` which is used to build and train the model. In classification problems such as this, we train the model using the classfication error rate: the percentage of incorrectly/correctly classified instances. We use the training data set to help us understand the data, select the appropriate model and determine model parameters.
+
+**TESTING SET** This is the `UNSEEN DATA`. We build a model because we want to classify `new data`. We are also chiefly interested in the model performance(error rate) on this new data as it is more realistic estimate of the model fit in the real world.
+
+**VALIDATION SET** Sometimes a part of the training set is split into the Validation Set to help us tune and optimize our models. It can be thought of as a Practice Testing set before we actually test the model using the TESTING SET
+
+A good discussion of this topic can be found [here](https://stats.stackexchange.com/questions/19048/what-is-the-difference-between-test-set-and-validation-set)
+
+```{r}
+# Load the Caret package which allows us to partition the data
+library(caret)
+# We use the dataset to create a partition (80% training 20% testing)
+index <- createDataPartition(iris_filedata$Species, p=0.80, list=FALSE)
+# select 20% of the data for testing
+testset <- iris_filedata[-index,]
+# select 80% of data to train the models
+trainset <- iris_filedata[index,]
+```
+
+Now that we have loaded and prepared our data for analysis, we are ready to move onto the next step which is `Exploring, Summarizing, Plotting and Understanding the Data`. 
+
+---
+
+
+
+---
+
+## References
+ [1]:http://machinelearningmastery.com/machine-learning-in-r-step-by-step/
+ [2]:https://blog.rstudio.org/2014/07/22/introducing-tidyr/ "Introduction to tidyr"
+ [3]:http://topepo.github.io/caret/index.html "Introduction to caret"
