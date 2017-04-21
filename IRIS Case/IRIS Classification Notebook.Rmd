@@ -1,6 +1,9 @@
 ---
-title: "Case Study: IRIS Classification"
-output: html_notebook
+title: 'Case Study: IRIS Classification'
+output:
+  html_notebook: default
+  html_document: default
+  pdf_document: default
 ---
 
 ### Hello World of Machine Learning
@@ -231,7 +234,7 @@ print(box)
 ```{r}
 library(ggthemes)
 ## Histogram
-histogram <- ggplot(data=iris, aes(x=Sepal.Width)) +
+histogram <- ggplot(data=trainset, aes(x=Sepal.Width)) +
     geom_histogram(binwidth=0.2, color="black", aes(fill=Species)) + 
     xlab("Sepal Width") +  
     ylab("Frequency") + 
@@ -243,7 +246,7 @@ print(histogram)
 
 ```{r}
 ## Faceting: Producing multiple charts in one plot
-facet <- ggplot(data=iris, aes(Sepal.Length, y=Sepal.Width, color=Species))+
+facet <- ggplot(data=trainset, aes(Sepal.Length, y=Sepal.Width, color=Species))+
     geom_point(aes(shape=Species), size=1.5) + 
     geom_smooth(method="lm") +
     xlab("Sepal Length") +
@@ -254,6 +257,143 @@ facet <- ggplot(data=iris, aes(Sepal.Length, y=Sepal.Width, color=Species))+
 
 print(facet)
 
+```
+
+---
+
+### Model Building
+
+Now that we have loaded the data and explored it to get a basic understanding of the relationships between the attributes, we can move to the next step which is **`Model Building`**. 
+
+> **The Problem**: *Given a set of data about the flowers (column 1 through 4) can we predict which of the 3 classes of flowers it belongs to.*
+
+We will build and fit a few different models to the training set and try to learn from the `trainset` data. This is machine learning. We will later use the best model selected (or even a combination of models) to predict the classification for the `testset`. We will then measure how well our model is expected to perform in the real world.
+
+---
+
+### DECISION TREES
+Decision Trees are a widely used set of algorithms used in Classification as well as Regression Problems in Data mining. Decision Trees classify observations by sorting them down the tree from the root node to the leaf node which provides the classification for the observation. Each node specifies a test on a particular attribute and each branch from that node represents one of the possible values for that test. These represent a form of supervised learning as trees can be first learnt using training observations and then be used to predict on the test set.
+
+There are many decision tree algorithms available and vary by the method the trees are constructed and grown. Here we will use the simple `rpart` algorithm to classify our data set and predict
+
+```{r}
+library(caret)
+set.seed(1000)
+?rpart
+
+# Fit the model
+model.rpart<-train(x = trainset[,1:4],y = trainset[,5], method = "rpart",metric = "Accuracy")
+
+```
+
+```{r}
+print(model.rpart)
+```
+
+Let us now plot the tree and see how the classification tree looks
+```{r}
+plot(model.rpart$finalModel)
+text(model.rpart$finalModel)
+```
+
+Let us produce a prettier tree
+
+```{r}
+## We use the Rattle package to produce some pretty tree plots
+# install.packages("rattle")
+library(rattle)
+# install.packages("rpart.plot")
+fancyRpartPlot(model.rpart$finalModel)
+
+```
+
+Now we can check how the tree performs on our training data
+```{r}
+## Predictions on train dataset
+pred<-table(predict(object = model.rpart$finalModel,newdata = trainset[,1:4],type="class"))
+pred
+```
+
+```{r}
+## Checking the accuracy using a confusion matrix by comparing predictions to actual classifications
+confusionMatrix(predict(object = model.rpart$finalModel,newdata = trainset[,1:4],type="class"),trainset$Species)
+```
+Now let us predict on the test data set and see how the `rpart` model does
+```{r}
+## Checking accuracy on the testdata set we created initially
+pred_test<-predict(object = model.rpart$finalModel,
+                   newdata = testset[,1:4],
+                   type="class")
+
+confusionMatrix(pred_test,testset$Species)
+```
+Our accuracy on the test set is worse than our accuracy on the training set. This is usually to be expected. If the training set accuracy differs from the test set accuracy by a lot, usually it is an indication of model overfitting to the training set.
+
+### RANDOM FORESTS
+Produce a model which averages the predictions from many such classification trees.
+
+From [Wikipedia](https://en.wikipedia.org/wiki/Random_forest)
+
+> Random forests or random decision forests are an ensemble learning method for classification, regression and other tasks, that operate by constructing a multitude of decision trees at training time and outputting the class that is the mode of the classes (classification) or mean prediction (regression) of the individual trees. Random decision forests correct for decision trees' habit of overfitting to their training set.
+
+Because of the standardization of the `CARET` package constructing fitting and verifying the performance of a `random forest` algorithm is very similar to the `rpart` algorithm we just saw
+
+```{r}
+library(caret)
+## install.packages("rf")
+set.seed(1000)
+?randomForest
+
+# Fit the model
+model.rf<-train(x = trainset[,1:4],y = trainset[,5], method = "rf",metric = "Accuracy")
+# Print the model
+print(model.rf)
+
+```
+```{r}
+## Verify the accuracy on the training set
+pred<-predict(object = model.rf$finalModel,newdata = trainset[,1:4],type="class")
+confusionMatrix(pred,trainset$Species)
+```
+We see the power of the random forest algorithm with the perfect accuracy of classification on the training set.
+
+Let us now verify how it performs on the `testset` data in the real world
+```{r}
+## Performance on the test set
+pred_test<-predict(object = model.rf$finalModel,newdata = testset[,1:4],type="class")
+confusionMatrix(pred_test,testset$Species)
+```
+Even though we were able to improve our accuracy on the training set, on the test set we still are misclassifying two observations. We will next consider another class of Algorithm which we hope would improve our testset accuracy
+
+### GRADIENT BOOSTING METHOD
+This class of ML Algorithms uses a technique called `BOOSTING` where we still grow decision classification trees, but each successive tree is grown with an intent to classify the missclassified data from the previous tree correctly.
+
+A very good discussion of this method is available here on [AnalyticsVidhya](https://www.analyticsvidhya.com/blog/2015/11/quick-introduction-boosting-algorithms-machine-learning/)
+
+As before the method to build a model using this algorithm is very similar to the ones we used before. As in the previous cases a lot of the difference in actual implementation of the algo's comes from the various parameters used to optimize the algo's. `CARET` package also helps standardize the optimization steps such as [`CROSS VALIDATION`](https://lagunita.stanford.edu/c4x/HumanitiesScience/StatLearning/asset/cv_boot.pdf) ,[`HYPER PARAMETER TURNING`,`GRID SEARCH`](https://www.analyticsvidhya.com/blog/2016/02/complete-guide-parameter-tuning-gradient-boosting-gbm-python/) etc.
+
+```{r}
+library(caret)
+## install.packages("gbm")
+library(gbm)
+set.seed(1000)
+
+# Fit the model
+model.gbm<-train(x = trainset[,1:4],y = trainset[,5], method = "gbm",metric = "Accuracy",verbose=FALSE)
+# Print the model
+print(model.gbm)
+
+```
+```{r}
+summary(model.gbm$finalModel)
+```
+
+
+```{r}
+## Verify the accuracy on the training set
+
+pred<-predict(object = model.gbm,newdata = trainset[,1:4],type="prob")
+confusionMatrix(pred,trainset$Species)
 ```
 
 
