@@ -1,0 +1,8 @@
+"0","# Levels of the prediction column"
+"0","levels(trainset$Species)"
+"1","[1]"
+"1"," ""Iris-setosa""    "
+"1"," ""Iris-versicolor"""
+"1"," ""Iris-virginica"" "
+"1","
+"

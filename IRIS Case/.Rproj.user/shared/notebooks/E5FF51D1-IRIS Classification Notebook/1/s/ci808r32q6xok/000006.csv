@@ -1,0 +1,8 @@
+"0","# Load the Caret package which allows us to partition the data"
+"0","library(caret)"
+"0","# We use the dataset to create a partition (80% training 20% testing)"
+"0","index <- createDataPartition(iris_filedata$Species, p=0.80, list=FALSE)"
+"0","# select 20% of the data for testing"
+"0","testset <- iris_filedata[-index,]"
+"0","# select 80% of data to train the models"
+"0","trainset <- iris_filedata[index,]"

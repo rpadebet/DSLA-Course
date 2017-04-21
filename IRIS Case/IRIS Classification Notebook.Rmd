@@ -1,5 +1,5 @@
 ---
-title: "Hello World of Machine Learning in R : IRIS Classification"
+title: "Case Study: IRIS Classification"
 output: html_notebook
 ---
 
@@ -36,7 +36,7 @@ install.packages("tidyr")
 
 ---
 
-### Data
+### Get the Data
 #### *About the data set*
 The Iris flower data set or Fisher's Iris data set is a multivariate data set introduced by the British statistician and biologist Ronald Fisher in his 1936 paper. This is a very famous and widely used dataset by everyone trying to learn machine learning and statistics. The data set consists of 50 samples from each of three species of Iris (Iris setosa, Iris virginica and Iris versicolor). Four features were measured from each sample: the length and the width of the sepals and petals, in centimetres. The fifth column is the species of the flower observed. For more history of this dataset read here [Wikipedia](https://en.wikipedia.org/wiki/Iris_flower_data_set)
 
@@ -125,6 +125,44 @@ trainset <- iris_filedata[index,]
 Now that we have loaded and prepared our data for analysis, we are ready to move onto the next step which is `Exploring, Summarizing, Plotting and Understanding the Data`. 
 
 ---
+
+### Explore the Data
+*Since we are dealing here with a clean and small dataset we are able to avoid the step of `Cleaning the data` which typically consumes a majority of the data scientists' time. *
+
+We explore the data to:
+
+- Understand the data
+- Summarize the data
+- Clean and Prune the data
+- Understand relationships between atrributes
+- Think about and source other data which maybe useful in answering the question
+- Get a preliminary feel for the types of models we think would best fit the data
+
+----
+
+#### Summarizing the Data
+We begin by getting an idea of the attributes, dimensions and size of the data we are dealing with
+```{r}
+# Dimensions of the data
+dim(trainset)
+```
+
+```{r}
+# Structure of the data
+str(trainset)
+```
+
+```{r}
+# Summary of the data
+summary(trainset)
+```
+
+
+```{r}
+# Levels of the prediction column
+levels(trainset$Species)
+```
+
 
 
 
