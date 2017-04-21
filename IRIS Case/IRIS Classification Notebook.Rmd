@@ -141,6 +141,7 @@ We explore the data to:
 ----
 
 #### Summarizing the Data
+
 We begin by getting an idea of the attributes, dimensions and size of the data we are dealing with
 ```{r}
 # Dimensions of the data
@@ -163,6 +164,97 @@ summary(trainset)
 levels(trainset$Species)
 ```
 
+### *Visualization and Exploration via plots*
+The advantage of a tool such as RStudio is that it allows a data scientist to creatively and quickly explore data via visualization. There are many powerful packages and tools in R such as `GGPLOT2`, `PLOTLY` etc which can be used to explore data as well as produce publishing quality plots to be used in reports and presentations. Here we will use some of these to explore and understand our dataset better
+
+### Base R plots
+We begin by using some base R plots to understand the distribution and attributes
+```{r}
+## Histogram
+hist(trainset$Sepal.Width)
+```
+
+```{r}
+## Scatter plot to check relationship between two attributes
+plot(trainset$Petal.Length,trainset$Petal.Width)
+```
+```{r}
+## Box plot to understand how the distribution varies for each attribute
+par(mfrow=c(1,4))
+  for(i in 1:4) {
+  boxplot(trainset[,i], main=names(trainset)[i])
+}
+```
+
+```{r}
+## Another Box plot to understand the distribution for each attribute broken down by class
+featurePlot(x=trainset[,1:4], y=trainset[,5], plot="box")
+```
+
+### Using ggplot2 and building better plots
+ggplot2 is a very powerful package built on the concept of `"Grammar of Graphics (gg)"`. It allows you to **build** a plot following a particular syntax. It produces more aesthetically pleasing, more powerful plots than base graphics using more compact code for plot of similar complexity. You can read and understand more about ggplot [here](https://opr.princeton.edu/workshops/Downloads/2015Jan_ggplot2Koffman.pdf) and [here](http://tutorials.iq.harvard.edu/R/Rgraphics/Rgraphics.html).
+A cheatsheet for ggplot is available [here](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
+
+Below we will plot some similar yet aesthetically pleasing plots using ggplot2
+```{r}
+# begin by loading the library
+library(ggplot2)
+```
+
+```{r}
+# Scatter plot
+g <- ggplot(data=trainset, aes(x = Petal.Length, y = Petal.Width))
+print(g)
+```
+  
+```{r}
+g <-g + 
+    geom_point(aes(color=Species, shape=Species)) +
+    xlab("Petal Length") +
+    ylab("Petal Width") +
+    ggtitle("Petal Length-Width")+
+    geom_smooth(method="lm")
+
+print(g)
+```
+```{r}
+## Box Plot
+box <- ggplot(data=trainset, aes(x=Species, y=Sepal.Length)) +
+    geom_boxplot(aes(fill=Species)) + 
+    ylab("Sepal Length") +
+    ggtitle("Iris Boxplot") +
+    stat_summary(fun.y=mean, geom="point", shape=5, size=4) 
+
+print(box)
+```
+
+```{r}
+library(ggthemes)
+## Histogram
+histogram <- ggplot(data=iris, aes(x=Sepal.Width)) +
+    geom_histogram(binwidth=0.2, color="black", aes(fill=Species)) + 
+    xlab("Sepal Width") +  
+    ylab("Frequency") + 
+    ggtitle("Histogram of Sepal Width")+
+    theme_economist()
+
+print(histogram)
+```
+
+```{r}
+## Faceting: Producing multiple charts in one plot
+facet <- ggplot(data=iris, aes(Sepal.Length, y=Sepal.Width, color=Species))+
+    geom_point(aes(shape=Species), size=1.5) + 
+    geom_smooth(method="lm") +
+    xlab("Sepal Length") +
+    ylab("Sepal Width") +
+    ggtitle("Faceting") +
+    theme_wsj() +
+    facet_grid(. ~ Species) # Along rows
+
+print(facet)
+
+```
 
 
 
