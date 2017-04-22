@@ -1,9 +1,9 @@
 ---
 title: 'Case Study: IRIS Classification'
 output:
-  pdf_document: default
   html_notebook: default
   html_document: default
+  pdf_document: default
 ---
 
 ### Hello World of Machine Learning
