@@ -1,16 +1,16 @@
 ---
 title: 'Case Study: IRIS Classification'
 output:
+  pdf_document: default
   html_notebook: default
   html_document: default
-  pdf_document: default
 ---
 
 ### Hello World of Machine Learning
-This is a good project because it is so well understood.
+This is a good case study and dataset to begin an introduction to Machine Learning because it is so well understood.
 
-- Attributes are numeric so you have to figure out how to load and handle data.
-- It is a classification problem, allowing you to practice with perhaps an easier type of supervised learning algorithms.
+- We will learn how to load and handle data.
+- It is a classification problem, allowing us to experiment with various ML Algos
 - It is a mutli-class classification problem (multi-nominal) that may require some specialized handling.
 - It only has 4 attribute and 150 rows, meaning it is small and easily fits into memory.
 - It gives an opportunity to apply many Machine Learning algorithms, to compare and contrast
@@ -48,8 +48,10 @@ The Iris flower data set or Fisher's Iris data set is a multivariate data set in
 #### *Load the dataset*
 We are going to do the following
 
-- Load the iris data directly from within R (*This dataset is so famous it comes with your R installation!*).
+- Load the iris data directly from within R 
+
 - Download and Load the data from a file. (*This is usually what you have to do for other problems*)
+
 - Split the data into a training dataset and a testing dataset to perform machine learning (*This is a standard 2 way split in machine learning. We could also do a 3 way split: training, validation and testing*)
 
 ---
@@ -167,10 +169,14 @@ summary(trainset)
 levels(trainset$Species)
 ```
 
-### *Visualization and Exploration via plots*
+---
+
+### *Visualization and Exploration*
 The advantage of a tool such as RStudio is that it allows a data scientist to creatively and quickly explore data via visualization. There are many powerful packages and tools in R such as `GGPLOT2`, `PLOTLY` etc which can be used to explore data as well as produce publishing quality plots to be used in reports and presentations. Here we will use some of these to explore and understand our dataset better
 
-### Base R plots
+---
+
+#### *Base R plots*
 We begin by using some base R plots to understand the distribution and attributes
 ```{r}
 ## Histogram
@@ -194,7 +200,9 @@ par(mfrow=c(1,4))
 featurePlot(x=trainset[,1:4], y=trainset[,5], plot="box")
 ```
 
-### Using ggplot2 and building better plots
+---
+
+#### *Grammer of Graphics GGPLOTs*
 ggplot2 is a very powerful package built on the concept of `"Grammar of Graphics (gg)"`. It allows you to **build** a plot following a particular syntax. It produces more aesthetically pleasing, more powerful plots than base graphics using more compact code for plot of similar complexity. You can read and understand more about ggplot [here](https://opr.princeton.edu/workshops/Downloads/2015Jan_ggplot2Koffman.pdf) and [here](http://tutorials.iq.harvard.edu/R/Rgraphics/Rgraphics.html).
 A cheatsheet for ggplot is available [here](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
 
@@ -246,13 +254,14 @@ print(histogram)
 
 ```{r}
 ## Faceting: Producing multiple charts in one plot
+library(ggthemes)
 facet <- ggplot(data=trainset, aes(Sepal.Length, y=Sepal.Width, color=Species))+
     geom_point(aes(shape=Species), size=1.5) + 
     geom_smooth(method="lm") +
     xlab("Sepal Length") +
     ylab("Sepal Width") +
     ggtitle("Faceting") +
-    theme_wsj() +
+    theme_fivethirtyeight() +
     facet_grid(. ~ Species) # Along rows
 
 print(facet)
@@ -261,17 +270,17 @@ print(facet)
 
 ---
 
-### Model Building
+### *Getting Started with Machine Learning*
 
 Now that we have loaded the data and explored it to get a basic understanding of the relationships between the attributes, we can move to the next step which is **`Model Building`**. 
 
-> **The Problem**: *Given a set of data about the flowers (column 1 through 4) can we predict which of the 3 classes of flowers it belongs to.*
+> **The Problem:** *Given a set of data about the flowers (column 1 through 4) can we predict which of the 3 classes of flowers it belongs to.*
 
 We will build and fit a few different models to the training set and try to learn from the `trainset` data. This is machine learning. We will later use the best model selected (or even a combination of models) to predict the classification for the `testset`. We will then measure how well our model is expected to perform in the real world.
 
 ---
 
-### DECISION TREES
+#### *Decision Tree Classifiers*
 Decision Trees are a widely used set of algorithms used in Classification as well as Regression Problems in Data mining. Decision Trees classify observations by sorting them down the tree from the root node to the leaf node which provides the classification for the observation. Each node specifies a test on a particular attribute and each branch from that node represents one of the possible values for that test. These represent a form of supervised learning as trees can be first learnt using training observations and then be used to predict on the test set.
 
 There are many decision tree algorithms available and vary by the method the trees are constructed and grown. Here we will use the simple `rpart` algorithm to classify our data set and predict
@@ -318,7 +327,7 @@ pred
 ## Checking the accuracy using a confusion matrix by comparing predictions to actual classifications
 confusionMatrix(predict(object = model.rpart$finalModel,newdata = trainset[,1:4],type="class"),trainset$Species)
 ```
-Now let us predict on the test data set and see how the `rpart` model does
+Let us predict on the test data set and see how the `rpart` model does
 ```{r}
 ## Checking accuracy on the testdata set we created initially
 pred_test<-predict(object = model.rpart$finalModel,
@@ -329,8 +338,10 @@ confusionMatrix(pred_test,testset$Species)
 ```
 Our accuracy on the test set is worse than our accuracy on the training set. This is usually to be expected. If the training set accuracy differs from the test set accuracy by a lot, usually it is an indication of model overfitting to the training set.
 
-### RANDOM FORESTS
-Produce a model which averages the predictions from many such classification trees.
+---
+
+#### *Random Forest Algorithm*
+Produce a model which averages the predictions from many such classification trees. This class of algo's uses a variation on the technique called [Bagging](https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/) using different attributes for growing each tree.
 
 From [Wikipedia](https://en.wikipedia.org/wiki/Random_forest)
 
@@ -357,7 +368,7 @@ confusionMatrix(pred,trainset$Species)
 ```
 We see the power of the random forest algorithm with the perfect accuracy of classification on the training set.
 
-Let us now verify how it performs on the `testset` data in the real world
+We now verify how it performs on the `testset` data in the real world
 ```{r}
 ## Performance on the test set
 pred_test<-predict(object = model.rf$finalModel,newdata = testset[,1:4],type="class")
@@ -365,7 +376,9 @@ confusionMatrix(pred_test,testset$Species)
 ```
 Even though we were able to improve our accuracy on the training set, on the test set we still are misclassifying two observations. We will next consider another class of Algorithm which we hope would improve our testset accuracy
 
-### GRADIENT BOOSTING METHOD
+---
+
+#### *Gradient Boosting Method*
 This class of ML Algorithms uses a technique called `BOOSTING` where we still grow decision classification trees, but each successive tree is grown with an intent to classify the missclassified data from the previous tree correctly.
 
 A very good discussion of this method is available here on [AnalyticsVidhya](https://www.analyticsvidhya.com/blog/2015/11/quick-introduction-boosting-algorithms-machine-learning/)
@@ -385,22 +398,151 @@ print(model.gbm)
 
 ```
 ```{r}
-summary(model.gbm$finalModel)
+summary(model.gbm)
 ```
-
 
 ```{r}
 ## Verify the accuracy on the training set
 
-pred<-predict(object = model.gbm,newdata = trainset[,1:4],type="prob")
+pred<-predict(object = model.gbm,newdata = trainset[,1:4])
 confusionMatrix(pred,trainset$Species)
 ```
-
-
+Let us now verify how it performs on the `testset` data in the real world
+```{r}
+## Performance on the test set
+pred_test<-predict(object = model.gbm,newdata = testset[,1:4])
+confusionMatrix(pred_test,testset$Species)
+```
+We still end up with the same testset accuracy despite using more and more sophisticated Algos!
 
 ---
 
-## References
+**Plotting Misclassified Observations**
+
+Let us now plot the observations and see which flowers were actually misclassified. We can then figure out if there is a reason why all these models misclassify those two flowers.
+
+*Please note that changing the model now after we have had it look at the test data isn't recommended or proper datascience*
+
+```{r}
+model_correct <- testset$Species==pred_test
+
+misclassify<- ggplot(testset) + 
+    geom_point(aes(Petal.Length, Sepal.Length, colour = model_correct, shape = Species), size = 2.5) + 
+    labs(x = "Petal.Length", y = "Sepal.Length") 
+
+print(misclassify)
+```
+We can see they are misclassified because the `Petal.Length` attributes for the two species `versicolor` and `virginica` are very close to each other and not clearly separable. This is why most of our models got them wrong.
+
+Let us now try another totally different class of model and see if we can improve on our results
+
+---
+
+#### *K Means Clustering Model*
+
+This model belongs to the super class of models which follow a machine learning technique called [Unsupervised Learning](http://www.sthda.com/english/wiki/cluster-analysis-in-r-unsupervised-machine-learning). 
+
+Machine learning (ML) itself can broadly be divided into two different fields:
+
+- *Supervised ML* defined as a set of tools used for prediction (linear model, logistic regression, linear discriminant analysis, classification trees, support vector machines and more)
+
+- *Unsupervised ML*, also known as `clustering`, is an exploratory data analysis technique used for identifying groups (i.e clusters) in the data set of interest. Each group contains observations with similar profile according to a specific criteria. Similarity between observations is defined using some inter-observation distance measures including Euclidean and correlation-based distance measures.
+
+We will also not use our favorite `CARET` package here, but we will come back to it in our final model later.
+
+```{r}
+# Since Kmeans is a random start algo, we need to set the seed to ensure reproduceability
+set.seed(20)
+```
+Since we know there are 3 classes, we begin with 3 centers. Typically when we don't know the classification of the dataset, we begin with a best estimate of number of classes we think it contains.
+
+Also since k-means assigns the centroids randomly we specify `nstart`  as 20 to run the algo 20 times with 20 random starting sets of centroids and then pick the best of those 20
+```{r}
+irisCluster <- kmeans(iris[, 1:4], centers = 3, nstart = 20)
+irisCluster
+```
+
+```{r}
+# Check the classification accuracy
+table(irisCluster$cluster, iris$Species)
+
+```
+We can also plot the clusters and their centroids to see how the algo clustered the observations
+
+```{r}
+plot(iris[c("Sepal.Length", "Sepal.Width")], col=irisCluster$cluster)
+points(irisCluster$centers[,c("Sepal.Length", "Sepal.Width")], col=1:3, pch=8, cex=2)
+```
+
+---
+
+#### *Linear Discriminant Analysis*
+Our last model will be the model to explain which Ronald Fisher originally used the Iris dataset.
+More information about this algorithm can be obtained [here](http://www.cs.ukzn.ac.za/~hughm/dm/content/slides08.pdf).
+
+Linear Discriminant Analysis model is generally used for small data sets which would otherwise suffer from small sample bias in other models. Other classes of models might not be able to pick the trends in the data correctly, so for smaller datasets, a probability based classifier such as bayesian classifiers and lda are more suitable
+
+Linear Discriminant Analysis (LDA) is also most commonly used as dimensionality reduction technique in the pre-processing step for pattern-classification and machine learning applications. The goal is to project a dataset onto a lower-dimensional space with good class-separability in order avoid overfitting (“curse of dimensionality”) and also reduce computational costs. A good discussion of this (although in Python) can be found [here](http://sebastianraschka.com/Articles/2014_python_lda.html)
+
+To use this model on our dataset we can go back to using the `CARET` package
+```{r}
+library(caret)
+#install.packages("MASS")
+library(MASS)
+
+set.seed(1000)
+
+# Fit the model
+model.lda<-train(x = trainset[,1:4],y = trainset[,5], method = "lda",metric = "Accuracy")
+# Print the model
+print(model.lda)
+
+```
+```{r}
+## Verify the accuracy on the training set
+
+pred<-predict(object = model.lda,newdata = trainset[,1:4])
+confusionMatrix(pred,trainset$Species)
+```
+
+Let us now verify how it performs on the `testset` data in the real world
+```{r}
+## Performance on the test set
+pred_test<-predict(object = model.lda,newdata = testset[,1:4])
+confusionMatrix(pred_test,testset$Species)
+```
+ Finally we get a better classification than what we had previously!
+ 
+---
+
+### *Summarizing the Models*
+ 
+ We have tried a few models on the Iris dataset which hopefully gives a broad overview of the variety of algorithms and models possible in R. As a final step we can summarize the results of our analysis by presenting the training set results for the models we employed
+ 
+ This sort of summary can be used to select the model just based on the training set data
+```{r}
+# summarize accuracy of models
+results <- resamples(list(TREE=model.rpart, RandomForest=model.rf, GBM=model.gbm, LDA=model.lda))
+summary(results)
+```
+**Plotting the results**
+```{r}
+dotplot(results)
+```
+
+---
+
+### Further Reading Assignment
+A technique being widely employed in Machine Learning to improve the accuracy of models is Ensembling or Stacking of different models to produce a super model. *Random Forest and Gradient Boosted Method use a similar such technique employed on similar kind of trees.* 
+
+Ensembling is a very popular and effective technique that is very frequently used by data scientists for beating the accuracy benchmark of even the best of individual algorithms. More often than not it’s the winning recipe in hackathons.
+
+- A starting point for learning about **Model Ensembling** can be found [here](https://www.analyticsvidhya.com/blog/2017/02/introduction-to-ensembling-along-with-implementation-in-r/)
+
+- A package which makes this convenient in R while using `CARET` can be found [here](https://cran.r-project.org/web/packages/caretEnsemble/vignettes/caretEnsemble-intro.html)
+
+---
+
  [1]:http://machinelearningmastery.com/machine-learning-in-r-step-by-step/
  [2]:https://blog.rstudio.org/2014/07/22/introducing-tidyr/ "Introduction to tidyr"
  [3]:http://topepo.github.io/caret/index.html "Introduction to caret"
