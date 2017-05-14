@@ -126,7 +126,7 @@ $(document).ready(function () {
 
 <div id="executive-summary" class="section level2">
 <h2><strong>Executive Summary</strong></h2>
-<p><em>In this exercise we try to explore, model and analyze the MTCARS dataset in order to quantify the relationship between mpg and the type of transmission. Although initial exploration of the data suggested that there might exist a significant difference in mpg observed in a vehicle depending on type of transmission (auto/manual), on further exploration and adjustment of the model for weight and initial acceleration of the car, we find that we are not able to quantify the difference in mpg due to the type of transmission</em></p>
+<p><em>In this exercise we try to explore, model and analyze the MTCARS dataset in order to quantify the relationship between mpg and the type of transmission.</em></p>
 </div>
 <div id="loading-and-exploring-the-data" class="section level2">
 <h2>Loading and Exploring the Data</h2>
@@ -205,7 +205,11 @@ search$anova</code></pre>
 </div>
 <div id="other-models" class="section level2">
 <h2>Other Models</h2>
-<p>We considered a few other models simplifying the selected model further, but we rejected all of them because 1. They worsened the <code>AIC</code> and 2. They biased the remaining <code>wt</code> variable further leading us to beleive <code>wt</code> has a greater impact on <code>mpg</code>.</p>
+<p>We considered a few other models simplifying the selected model further, but we rejected all of them because</p>
+<ol style="list-style-type: decimal">
+<li>They worsened the <code>AIC</code> and</li>
+<li>They biased the remaining <code>wt</code> variable further leading us to beleive <code>wt</code> has a greater impact on <code>mpg</code>.</li>
+</ol>
 <pre class="r"><code>mdl2 &lt;-lm(mpg ~ wt+am-1 ,mtcars)
 mdl3 &lt;-lm(mpg ~ wt+qsec-1 ,mtcars)
 mdl4 &lt;-lm(mpg ~ am-1 ,mtcars)

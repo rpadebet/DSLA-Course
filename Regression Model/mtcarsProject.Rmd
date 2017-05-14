@@ -3,12 +3,12 @@ title: "Regression Model - Motor Trend"
 author: "Rohit Padebettu"
 date: "May 14, 2017"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ## **Executive Summary**
-*In this exercise we try to explore, model and analyze the MTCARS dataset in order to quantify the relationship between mpg and the type of transmission. Although initial exploration of the data suggested that there might exist a significant difference in mpg observed in a vehicle depending on type of transmission (auto/manual), on further exploration and adjustment of the model for weight and initial acceleration of the car, we find that we are not able to quantify the difference in mpg due to the type of transmission*
+*In this exercise we try to explore, model and analyze the MTCARS dataset in order to quantify the relationship between mpg and the type of transmission.*
 
 ## Loading and Exploring the Data
 We begin by loading the libraries and  exploring the data needed for the analysis. We factorize and label some of the data columns for later work.
@@ -84,7 +84,11 @@ g<-ggplot(mtcars,aes(x=wt,y=mpg))+
 
 ## Other Models
 
-We considered a few other models simplifying the selected model further, but we rejected all of them because 1. They worsened the `AIC` and 2. They biased the remaining `wt` variable further leading us to beleive `wt` has a greater impact on `mpg`.
+We considered a few other models simplifying the selected model further, but we rejected all of them because 
+
+1. They worsened the `AIC` and 
+2. They biased the remaining `wt` variable further leading us to beleive `wt` has a greater impact on `mpg`.
+
 ```{r, echo=TRUE}
 mdl2 <-lm(mpg ~ wt+am-1 ,mtcars)
 mdl3 <-lm(mpg ~ wt+qsec-1 ,mtcars)
