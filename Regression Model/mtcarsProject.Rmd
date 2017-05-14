@@ -1,0 +1,109 @@
+---
+title: "Regression Model - Motor Trend"
+author: "Rohit Padebettu"
+date: "May 14, 2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+## **Executive Summary**
+*In this exercise we try to explore, model and analyze the MTCARS dataset in order to quantify the relationship between mpg and the type of transmission. Although initial exploration of the data suggested that there might exist a significant difference in mpg observed in a vehicle depending on type of transmission (auto/manual), on further exploration and adjustment of the model for weight and initial acceleration of the car, we find that we are not able to quantify the difference in mpg due to the type of transmission*
+
+## Loading and Exploring the Data
+We begin by loading the libraries and  exploring the data needed for the analysis. We factorize and label some of the data columns for later work.
+```{r,eval=TRUE,warning=FALSE}
+library(ggplot2)
+library(car)
+?mtcars
+
+# Factoring and labelling some of the data
+ mtcars$cyl <-as.factor(mtcars$cyl)
+ mtcars$am <-as.factor(mtcars$am)
+ mtcars$am <-relevel(mtcars$am,"1")
+ translabs<-c("0" = "Auto","1" = "Manual")
+```
+
+We proceed to generate a box plot to visualize the relationship between `mpg` and type of transmission. We can see from the **Plot 1** in the **Appendix** that there seemingly exists a significant difference between distribution of mpgs for Manual Transmission vehicles (1) and Auto Transmission Vehicles(0)
+
+We also explore the relationship between other variables like Weight and number of cylinders to better understand their impact on mpg. We show this in **Plot 2** of the **Appendix**
+
+## Fitting Models
+In order to model the data to better predict the outcome `mpg` we use linear regression models. We specifically begin by using a full regression model where all the variables in the dataset `mtcars` are considered to be predictors.
+```{r, echo=TRUE}
+full <- lm(mpg ~ .,mtcars)
+```
+We then step through various regression models hierarchically, using the `step()` function backwards, dropping one variable at a time. Each time we assess the effect of the dropped variable via reduction in Akaike's Information Criteria (`AIC`). We tabulate this through the `ANOVA` analysis below
+```{r, eval=TRUE}
+search <-step(full,direction = "backward",trace = FALSE)
+search$anova
+```
+### The Best Fit model
+From the above analysis, we determine the best model to be one where the predictors are Weight given by `wt`, Transmission given by `am` and time to 1/4 mile given by `qsec`. We model this by removing the intercept term to allow for direct interpretation of the coefficients.
+
+```{r, eval=TRUE}
+mdl <-lm(mpg ~ wt+am+qsec-1 ,mtcars)
+ summary(mdl)$coef
+```
+
+We also try to simplify the model further, which we detail in the **Appendix** under the **Other Models** section, but didn't proceed with them due to worsening `AIC`.
+
+### Interpretation of Coefficients
+The coefficient estimates show that, all else equal
+
+- An **increase in weight** of 1000lbs leads to **decrease in mpg of 3.9165**
+- Auto Transmission vehicles have a lower but positive (9.6178) mean contribution to mpg but with a 95% confidence interval of (-4.64 to 23.87). _As this interval contains zero, it cannot be confirmed that Auto Transmission has a positive influence on mpg by itself_
+- Manual Transmission vehicles have a higher positive (12.5536) mean contribution to mpg with a 95% confidence interval of (0.15 to 24.96). _However since this interval doesn't contain zero we can say with 95% confidence that influence on mpg of Manual Transmission is positive_
+- Coefficient of `qsec` indicates that the mpg improves by 1.226 for every one sec increase in time required for first 1/4 mile i.e. **slower cars are better for mpg**
+
+### Diagnostics of the Model
+We run a few standard diagnostics on the model we selected to not only ensure that the model doesn't violate any normality assumptions, but also to see if any specific outliers in the dataset are contributing to worsen the model. These **Diagnostic Plots** are listed in the **Appendix**
+
+
+---------------
+# Appendix
+
+## Plot 1 
+
+#### Boxplot of MPG distribution split by type of Transmission (Auto:0, Manual:1)
+```{r, echo=FALSE,fig.height=4,fig.width=4,fig.align= "left"}
+plot(mtcars$am,mtcars$mpg,main="Car Mileage", 
+  	xlab="Type of Transmission", ylab="Miles Per Gallon",col = c("red","blue"))
+```
+
+## Plot 2
+
+#### Relationship between MPG and Weight broken down by Transmission 
+```{r, echo=FALSE,fig.height=4,fig.width=8,fig.align= "left"}
+g<-ggplot(mtcars,aes(x=wt,y=mpg))+
+     geom_point(aes(color = cyl))+
+     geom_smooth(method = "lm") +
+     facet_grid(~am, labeller = as_labeller(translabs) )
+ print(g)
+```
+
+## Other Models
+
+We considered a few other models simplifying the selected model further, but we rejected all of them because 1. They worsened the `AIC` and 2. They biased the remaining `wt` variable further leading us to beleive `wt` has a greater impact on `mpg`.
+```{r, echo=TRUE}
+mdl2 <-lm(mpg ~ wt+am-1 ,mtcars)
+mdl3 <-lm(mpg ~ wt+qsec-1 ,mtcars)
+mdl4 <-lm(mpg ~ am-1 ,mtcars)
+
+extractAIC(mdl);extractAIC(mdl2); extractAIC(mdl3); extractAIC(mdl4)
+anova(mdl,mdl2,mdl3)
+```
+
+
+## Diagnostic Plots
+
+```{r,echo=FALSE,fig.height=4,fig.width=8,fig.align= "left"}
+par(mfrow=c(1,2))
+plot(mdl, which = 1)
+plot(mdl, which = 2)
+```
+
+#### Plot of Influence Measures from Car package
+```{r,echo=TRUE,fig.height=6,fig.width=8,fig.align= "left"}
+influenceIndexPlot(mdl)
+```
