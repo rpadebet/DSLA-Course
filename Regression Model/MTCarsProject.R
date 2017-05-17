@@ -9,13 +9,13 @@ str(mtcars)
 summary(mtcars)
 
 # Description
-#' The data was extracted from the 1974 Motor Trend US magazine, 
-#' and comprises fuel consumption and 10 aspects of automobile design and 
+#' The data was extracted from the 1974 Motor Trend US magazine,
+#' and comprises fuel consumption and 10 aspects of automobile design and
 #' performance for 32 automobiles (1973–74 models).
-#' 
-#' 
+#'
+#'
 #' Data Model
-#' 
+#'
 #' A data frame with 32 observations on 11 variables.
 
 # [, 1]	mpg	Miles/(US) gallon
@@ -35,20 +35,20 @@ summary(mtcars)
  mtcars$am <-as.factor(mtcars$am)
  mtcars$am <-relevel(mtcars$am,"1")
  translabs<-c("0" = "Auto","1" = "Manual")
- 
-#Exploring data via plots 
+
+#Exploring data via plots
  plot(mtcars$am,mtcars$mpg)
- 
+
  g<-ggplot(mtcars,aes(x=wt,y=mpg))+
      geom_point(aes(color = cyl))+
      geom_smooth(method = "lm") +
      facet_grid(~am, labeller = as_labeller(translabs) )
  print(g)
- 
+
  # Fitting linear models starting with the full model
  full <- lm(mpg ~ .,mtcars)
  summary(full)$coefficients
- 
+
  #Stepping backwards through various models
  search <-step(full,direction = "backward",trace = FALSE)
  search$anova
@@ -57,7 +57,7 @@ summary(mtcars)
  mdl <-lm(mpg ~ wt+am+qsec-1 ,mtcars)
  summary(mdl)
  extractAIC(mdl)
- 
+
  # The coefficient estimates show that
 
  # All else equal:
@@ -66,31 +66,31 @@ summary(mtcars)
                 # Since this interval contains zero, it cannot be confirmed that AT has a positive influence on mpg
  # MT vehicales have a higher positive (12.5536) mean contribution to mpg with a 95% confidence interval of (0.15 to 24.96).
                 # Since this interval doesn't contain zero they can be said to be positive influence on mpg
- # qsec indicates that the mpg improves by 1.226 for every one sec increase in time required for first 1/4 mile 
+ # qsec indicates that the mpg improves by 1.226 for every one sec increase in time required for first 1/4 mile
                 # i.e. slower cars are better for mpg
 
  # Further Simplification:
- # Removing qsec or am from the model leads to worse AIC score and biases the contribution of wt to mpg even more 
+ # Removing qsec or am from the model leads to worse AIC score and biases the contribution of wt to mpg even more
             # although it leads to significant coefficients for auto/manual transmission variables
  mdl2 <-lm(mpg ~ wt+am-1 ,mtcars)
  summary(mdl2)
  extractAIC(mdl2)
- 
+
  mdl3 <-lm(mpg ~ wt+qsec-1 ,mtcars)
  summary(mdl3)
  extractAIC(mdl3)
- 
+
  mdl4 <-lm(mpg ~ am-1 ,mtcars)
  summary(mdl4)
  extractAIC(mdl4)
- 
+
  anova(mdl,mdl2,mdl3)
- 
- 
+
+
  mdl_i <-lm(mpg ~ wt+am+qsec ,mtcars)
  summary(mdl_i)
  extractAIC(mdl_i)
- 
+
 # Diagnostics of the model
 
  #Residuals Plot : Almost normally distributed around zero without a pattern
@@ -101,7 +101,7 @@ summary(mtcars)
   plot(mdl, which = 4)
  # Plot of infuence measures from car package
  influenceIndexPlot(mdl)
-  
+
 # Removing the Chrysler Imperial data point and remodelling
 which.max(cooks.distance(mdl))
 which.max(hatvalues(mdl))
@@ -112,9 +112,9 @@ summary(mdl_mod)
 extractAIC(mdl_mod)
 influenceIndexPlot(mdl_mod)
 
-# leads to significants improved AIC score as well as 
+# leads to significants improved AIC score as well as
 # better confidence intervals around positive effects of transmission on mpg
 
 # With the adjusted dataset, we can infer with at least 95% confidence that manual transmission adds on average 15.866mpg
 # and at 90% confidence interval we can infer that automatic transmission adds on average 13.668 mpg, all else equal.
- 
+
