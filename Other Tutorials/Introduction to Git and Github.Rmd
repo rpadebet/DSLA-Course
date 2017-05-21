@@ -1,0 +1,51 @@
+---
+title: "Introduction to Git and Github"
+author: "Rohit Padebettu"
+date: "5/10/2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+# **Install Git & Create a GitHub account**
+
+The first two things you'll want to do are install git and create a free GitHub account.
+
+1. Follow the instructions [Installing Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) to install git (if it's not already installed) 
+
+2. Once you've done that, create a GitHub account here [Github](https://github.com). Accounts are free for public repositories, but there's a charge for private repositories.
+
+## **Try Git Commands**
+
+If you would like to try out a few git commands and learn to use it online in a safe place before you try it on your own computer, follow the tutorial at this [link](https://try.github.io/levels/1/challenges/1)
+
+## **Git Cheat Sheet**
+
+For learning and to have a reference to commonly used Git and Github commands, please visit and store the pdf at the site [here] (https://education.github.com/git-cheat-sheet-education.pdf)
+
+## **Detailed Tutorial**
+
+For a nice introduction to frequently used command line usage and a detailed tutorial on the git work flow and how we usually interact with github, the notes put together [here](https://www.vrdc.cornell.edu/computing-for-economists/Git_CL_Slides/Git_Notes.pdf) are a good reference. It would be a good idea to replicate the workflow on your local machine.
+
+## **Git History and Integration with R**
+
+The presentation made available [here](https://www.biostat.wisc.edu/~kbroman/talks/GitPrimer.pdf) can help you get a good understanding of:
+- Why is Version Control necessary
+- What are Repositories
+- What is Git and why it is so useful
+- What is Github and how it works with Git
+- How R and RStudio integrates with Git and Github
+
+## **Git Workflow & Collaboration**
+
+To get an understanding of the git workflow and the various ways in which you can collaborate with others via git, I continue to find this [online tutorial](https://www.atlassian.com/git/tutorials/syncing) very useful
+
+If you are interested in a presentation about the typical workflow, you can find it [here](https://www.cs.cmu.edu/~soonhok/talks/20140519_Git.pdf)
+
+
+## **Video Tutorials**
+
+If you prefer a video tutorial to understand Git the following two tutorials maybe of interest to you
+
+- [Git Tutorial for Beginners: Command-Line Fundamentals](https://www.youtube.com/watch?v=HVsySz-h9r4)
+
+- [How to Get Started with Git and Github • The Basics of Git and GitHub] (https://www.youtube.com/watch?v=rWhnsx4PDQU) 

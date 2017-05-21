@@ -1,0 +1,52 @@
+---
+title: "Tutorial for Installing RStudio"
+author: "Rohit Padebettu"
+date: "5/10/2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+## Tutorial for Installing R & RStudio
+Installing R & RStudio is quite simple if you are generally experienced with installing software on your machines.
+
+- Basic R can be installed from here: [CRAN](http://cran.us.r-project.org/)
+
+- Next you can install [RStudio](https://www.rstudio.com/products/rstudio/download2/). RStudio is an Integrated Development Environment for R. Please install the latest version available for your operating system.
+
+## Video Tutorials for Installation
+If you prefer following a video tutorial on installing R and RStudio please check out the tutorials below from Udacity
+
+- [Install RStudio on Windows](https://www.youtube.com/watch?v=5ZbjUEg4a1g&list=PLAwxTw4SYaPlSFCDRaseIGGxlGn81Adjs&index=15)
+
+- [Install RStudio on Mac](https://www.youtube.com/watch?v=buCEFFuLpYo&index=16&list=PLAwxTw4SYaPlSFCDRaseIGGxlGn81Adjs)
+
+## RStudio Introduction
+
+To get yourself quickly familiar with RStudio, please refer to this [RStudio 101](http://dss.princeton.edu/training/RStudio101.pdf)
+
+If you rather prefer reading a book, please visit [Getting Started with RStudio](http://www.cs.utexas.edu/~cannata/dataVis/Class%20Notes/Getting%20Started%20with%20RStudio.pdf)
+
+A useful cheatsheet to hang onto while you get familiar with RStudio is available [here](https://www.rstudio.com/wp-content/uploads/2016/01/rstudio-IDE-cheatsheet.pdf)
+
+## Learn R Cheatsheets
+Cheatsheets and Reference cards are useful to hang on to while you work on mastering the language. This would save your time looking up for common help. They help you focus on the more important issues of solving the problem at hand.
+
+- [Basic R Cheatsheet](http://github.com/rstudio/cheatsheets/raw/master/source/pdfs/base-r.pdf)
+
+- [R Reference Card](https://cran.r-project.org/doc/contrib/Short-refcard.pdf)
+
+## R Packages
+R has a huge list of packages which you can install on top of basic R to make your programming life easier. Rather than try to reinvent the wheel, train yourself to look for a package which can help you solve your problem. Except in some unique cases, if you are trying to solve some generic problem, chances are - **There is a package for that!
+**
+
+1. [Quick list of useful R packages and Package installation](https://support.rstudio.com/hc/en-us/articles/201057987-Quick-list-of-useful-R-packages)
+
+2. [CRAN Task Views: List of R packages organized by discipline](https://cran.r-project.org/web/views/)
+
+3. [A guide to some of the most useful R Packages](https://github.com/rstudio/RStartHere/blob/master/README.md)
+
+
+
+
+

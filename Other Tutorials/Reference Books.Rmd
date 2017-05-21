@@ -1,0 +1,35 @@
+---
+title: "Reference Books for Data Science"
+author: "Rohit Padebettu"
+date: "5/10/2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+## Books for Learning Data Science
+
+Here are few books I think might be good reference material for our students. Some of it is free but others might require some purchasing
+
+1. [Introduction to Statistical Learning](http://www-bcf.usc.edu/~gareth/ISL/) 
+
+2. [Art of Data Science](https://leanpub.com/artofdatascience) 
+
+3. [Storytelling with Data: A Data Visualization Guide for Business Professionals](https://www.amazon.com/Storytelling-Data-Visualization-Business-Professionals/dp/1119002257/ref=sr_1_1?ie=UTF8&qid=1480128264&sr=8-1&keywords=data+visualization) 
+
+4. [R for Data Science](http://r4ds.had.co.nz/)
+
+5. [Big Data Analytics with R](https://www.packtpub.com/big-data-and-business-intelligence/big-data-analytics-r)
+
+6. [Pushing R Further - AWS and Microsoft Azure](https://www.packtpub.com/sites/default/files/downloads/5396_6457OS_PushingRFurther.pdf)
+
+7. [RStudio 101](http://dss.princeton.edu/training/RStudio101.pdf)
+
+8. [Undergraduate Guide to R - _For Basic Understanding_](http://www.biostat.jhsph.edu/~ajaffe/docs/undergradguidetoR.pdf)
+
+9. [The R Book - _For Comprehensive Understanding_](https://www.cs.upc.edu/~robert/teaching/estadistica/TheRBook.pdf)
+
+10. [Hitchhiker's Guide to GGPLOT2 in R](https://leanpub.com/hitchhikers_ggplot2)
+
+11. [Python for Data Analysis](http://www3.canisius.edu/~yany/python/Python4DataAnalysis.pdf)
+
+
