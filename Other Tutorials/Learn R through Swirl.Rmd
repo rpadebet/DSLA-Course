@@ -1,0 +1,88 @@
+---
+title: "Learn R through Swirl"
+author: "Rohit Padebettu"
+date: "5/26/2017"
+output:
+  pdf_document: default
+  html_document: default
+---
+## Introduction
+This tutorial is a **necessary first step** for students who have had no past experience in using R. It is recommended that students complete the first course *"R Programming"*, which is a collection of 15 sub-modules before working on the first case study. This is a collection of interactive courses for use with the [swirl R package](http://swirlstats.com). You'll find instructions for installing courses below on this page.
+
+## Pre-requisites
+Pre-requisites for this tutorial are to have access to a working version of RStudio installed on your machine. Please follow and complete the RStudio installation tutorial before getting started on this.
+
+## Install and run a course automatically from swirl
+
+**This is the preferred method of installing courses.** It automates the process by allowing you to do everything right from the R console.
+
+1) Make sure you have a recent version version of swirl:
+
+```{r, eval=F}
+install.packages("swirl")
+```
+
+2) Enter the following from the R console, **substituting the name of the course** that you wish to install:
+
+```{r, eval=F}
+library(swirl)
+install_course("Course Name Here")
+swirl()
+```
+
+For example, `install_course("R Programming")` will install the R Programming course. **Please note that course names are case sensitive!**
+
+If that doesn't work for you...
+
+## Install and run a course manually
+
+If the automatic course installation method outlined above does not work for you, then there's a simple alternative.
+
+1) Click [**here**](https://github.com/swirldev/swirl_courses/archive/master.zip) to download the file `swirl_courses-master.zip`.
+
+2) Enter the following from the R console, **substituting the correct file path** to your downloaded file and the **name of your desired course**:
+
+```
+library(swirl)
+install_course_zip("path/to/file/here/swirl_courses-master.zip", multi=TRUE, 
+                   which_course="Course Name Here")
+swirl()
+```
+
+For example, if you download the zip file to `~/Downloads/swirl_courses-master.zip`, then the following command will install the R Programming course.
+
+```
+install_course_zip("~/Downloads/swirl_courses-master.zip", multi=TRUE, which_course="R Programming")
+```
+
+**Please note that course names are case sensitive!**
+
+Although we recommend you install one course at a time, if you omit the `which_course` argument, then all available courses from this repository will be installed:
+
+```
+install_course_zip("~/Downloads/swirl_courses-master.zip", multi=TRUE)
+```
+
+## R Programming
+The R Programming course is a collection of 15 sub-modules to help familiarize you with some basic operations done in R. the modules are as listed below
+
+ 1. Basic Building Blocks
+ 2. Workspace and Files
+ 3. Sequences of Numbers
+ 4. Vectors             
+ 5. Missing Values 
+ 6. Subsetting Vectors
+ 7. Matrices and Data Frames
+ 8. Logic            
+ 9. Functions
+ 10. lapply and sapply 
+ 11. vapply and tapply
+ 12. Looking at Data       
+ 13. Simulation
+ 14. Dates and Times
+ 15. Base Graphics
+
+
+## Uninstall a course
+
+If you'd like to remove a course at any time, you can use `uninstall_course("Course Name Here")`.
