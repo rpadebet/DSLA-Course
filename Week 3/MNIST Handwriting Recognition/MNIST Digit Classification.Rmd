@@ -1,0 +1,373 @@
+---
+title: "MNIST Digit Recognition"
+author: "Rohit Padebettu"
+date: "6/4/2017"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+### Introduction
+The MNIST case is the "Hello World" of image recognition in deep learning. It is a great illustration of what can be acomplished with neural network algorithms. The MNIST(Modern National Institute of Standards and Technology) is a large database of handrwritten digits commonly used in machine learning and image processing systems.
+
+The mnist dataset is large and highly pre-processed, making it easy to get started for image recoginition purposes. The data consists of pixel values for 70,000 handwritten digits 0 - 9 from many scanned documents. 10,000 of the scanned digits are separated out as the test set. It also includes labels for each image, telling us which digit it is. We will use these labels to builda  supervised learning algorithm.
+
+In this case we're going to train a model to look at images and predict what digits from 0-9 they are. That makes this a multi-class classification problem. Our goal isn't to train a really elaborate model that achieves state-of-the-art performance, but rather to dip a toe into using Neural Networks in R. We are also going to try to classify the same dataset using some other non-neural network algorithms we have learnt to see how they perform compared to the neural network based algorithm.
+
+More details about the dataset, including algorithms that have been tried on it and their levels of success, can be found at http://yann.lecun.com/exdb/mnist/index.html.
+
+---
+
+### Dataset
+The dataset is available at at many places throughout the internet in various forms. In our case let us download the files from pjreddie's website or kaggle, since these two sources provide csv files for train and test set separately which are easily processed.
+
+To download the files to our local machine, we use the following code. the train set is about 105MB and the test set is about 18 MB
+```{r, eval=FALSE}
+# Training Set
+download.file(url = "https://pjreddie.com/media/files/mnist_train.csv", method="curl",
+              destfile = "./train.csv")
+# Testing Set
+download.file("https://pjreddie.com/media/files/mnist_test.csv", method="curl",
+              destfile = "./test.csv")
+```
+
+The data files train.csv and test.csv contain gray-scale images of hand-drawn digits, from zero through nine.
+
+Each image is 28 pixels in height and 28 pixels in width, for a total of 784 pixels in total. Each pixel has a single pixel-value associated with it, indicating the lightness or darkness of that pixel, with higher numbers meaning darker. This pixel-value is an integer between 0 and 255, inclusive.
+
+Both datasets have 785 columns. The first column is an integer indicating the label of the digit drawn by the user. The rest of the columns contain the pixel-values of the associated image.
+
+---
+
+### Installing the required packages
+We will introduce couple of new packages as part of this case. We are already familiar with the great `caret` package we used in the `Leaf Classification Case` earlier. Here we will introduce two more very useful packages `data.table` and `h2o`.
+
+#### *DATA.TABLE Package:* 
+The `data.table` package is an incredibly powerful package in R to learn. It provides an enhanced version of R's regular data.frames. Querying and processing records or variables using data.table is orders of maginitude faster than using data.frames or anything else available in R. This feature is even more useful as the data set size grows and complex data manipulations are needed to be performed. All this speed comes at the cost of a slightly complex,cryptic and difficult to master syntax. However it is worth to invest the time to learn the syntax to be able to save more time later on in working with bigger and complex data. `data.table` also provides a very fast file reading function called `fread` which is super fast and very efficient compated to other file readers in R like `read.csv` and `read.table`. To learn more about the `data.table` package type `??data.table` within your R console after installation and go through all the help tutorials.
+
+#### *H2O Package:*
+The `h2o` package in R is an implementation of the H2O library. H2O is an open source, distributed, java machine learning library. This means this library implements common machine learning algorithms and even cutting edge machine learning algorithms in Java and makes it availabe to us in form of a nice R package. This package is useful because it brings scale and distributed processing to R allowing us to work on some truly big data sets. A good introduction to H2O can be found [here](http://www.stat.berkeley.edu/~ledell/docs/h2o_hpccon_oct2015.pdf)
+
+H2O allows us to take greater advantage of our CPU processing power. It can also be connected with clusters at cloud platforms for doing computations at scale in a distributed way. Along with, it uses in-memory compression to handle large data sets even with a small cluster. In addition, H2O provides a nice GUI interface to build store and watch model performance. More on it's performance on some data sets can be found [here](https://www.analyticsvidhya.com/blog/2016/05/h2o-data-table-build-models-large-data-sets/)
+
+To install both these packages and load the `caret` package we do the following
+```{r, eval=FALSE}
+install.packages("h2o")
+install.packages("data.table")
+```
+
+```{r, echo=FALSE}
+suppressWarnings(library(caret))
+suppressWarnings(library(h2o))
+suppressWarnings(library(data.table))
+```
+
+---
+
+### Loading and Exploring the dataset
+Once the necessary packages are loaded, we can begin working on our dataset by first loading the data into memory and then exploring it.
+
+#### Loading the data
+To load the data into memory we use `data.table's` fast `fread` function as below
+```{r}
+train<-fread(input = "train.csv")
+test<-fread(input = "test.csv")
+```
+
+#### Exploring the data
+We can begin exploring the data by first looking at the dimensions of the dataset, the structure of the dataset and viewing the first few rows of the data set
+
+*Dimensions of the data*
+```{r}
+dim(train)
+dim(test)
+```
+We can see that the `train` set has 60,000 rows(images) spread across 785 columns and the `test` set has 10,000 rows(images) spread across similar 785 columns
+
+*Structure of the data*
+```{r, eval=FALSE}
+str(train)
+str(test)
+```
+
+You can load the stucture of any data set using the `str` function and observe how the dataset is organized
+
+*Sample Data*
+```{r}
+head(train)
+```
+The first column `V1` in the data is the *label* and the rest of the 784 columns indicate the pixel density
+
+---
+
+*Plot the Data*
+Since these are known to be images, we can plot the first few images in the `train` set to see how they appear
+
+```{r , echo=F}
+# Create a 28*28 matrix with pixel color values
+m = matrix(unlist(train[10,-1]), nrow = 28, byrow = TRUE)
+```
+
+```{r}
+
+# Plot that matrix
+image(m,col=grey.colors(255))
+
+# reverses (rotates the matrix)
+rotate <- function(x) t(apply(x, 2, rev)) 
+
+# Plot some of images
+par(mfrow=c(2,3))
+lapply(1:6, 
+       function(x) image(
+         rotate(matrix(unlist(train[x,-1]),nrow = 28, byrow = TRUE)),
+         col=grey.colors(255),
+         xlab=train[x,1]
+       )
+)
+
+```
+
+```{r}
+
+par(mfrow=c(1,1)) # set plot options back to default
+```
+
+The images in this dataset are highly processed using some other image manipulation softwares to scale and center these images exactly in order to be consistently read by the machine. If we are to use our own handwritten examples to train our model, we would also need to perform similar sort of image manipulations involving conversion to grayscale, centering, cropping, rotating and scaling.
+
+---
+
+### Modeling the data
+Now that we understand how the data is structured and stored in our tables, we can begin building machine learning models to learn the patterns in the `train` data. These models can later be used to predict and compare with the labels in the `test` data.
+
+#### Random Forest Model
+As a first step let us model this data using the `randomforest` algorithm in the previously learnt `CARET` package. Tree based algorithms usually work one variable at a time.  `randomforest` algo improves the accuracy of the tree based algorithms by creating an ensemble of diverse trees. However these are known to be no very good for image classification tasks especially using just the default variables without any feature engineering.
+
+```{r}
+inTrain = data.frame(y=as.factor(unlist(train[,1])), train[,-1])
+inTest = data.frame(y=as.factor(unlist(test[,1])), test[,-1])
+
+# Converting the first label column into factors
+inTrain$y <- as.factor(inTrain$y)
+inTest$y <- as.factor(inTest$y)
+```
+
+Also we will only be using the first 1000 images to classify because this algo can take a long time to run.
+
+```{r, cache=T, eval=FALSE, echo=FALSE}
+
+# Random Forest algorithm
+set.seed(1000)
+
+# Setting up the parameter search grid for rf
+rfGrid <-  expand.grid( mtry = c(10,30,100))
+model.rf <- train(y ~ ., # classify Y as a function of all other variables
+             data = head(inTrain, 1000), # Pick the top 1000 images
+             method = 'rf',
+             tuneGrid = rfGrid, # Tune the model for different values of mtry
+             ntree = 300, # number of trees to grow
+             metric = 'Accuracy', # metric to use for selecting model
+             allowParallel = TRUE # allow trees to be built parallely
+             )
+
+saveRDS(model.rf,"RF Model")
+
+```
+
+**NOTE: The above model would take some time to run on most machines**
+
+```{r}
+model.rf<-readRDS("RF Model")
+model.rf$finalModel
+```
+
+
+#### Prediction using Test set
+Next we look at how the model performed againt some of the test set
+
+```{r}
+
+results <- predict(model.rf$finalModel, newdata = inTest)
+confusionMatrix(results, inTest$y)
+
+```
+
+
+As can be seen in the results above, while the OOB predicted error rate of the model from the training set alone was about 10.9%, the error rate on the test set was about 11.38%. We can imporve upon these results by using the full dataset for training and optimizing tuning parameters available to us, but that would probably take computational time totalling in hours. We will leave that exercise to those interested in such an effort.
+
+---
+
+### H2O based Models
+
+The first step is to initiate a H2O session. We will also ask our H2O session to use all the cores available on our machine. If we have a multicore machine, R usually uses only one core to perform it's computations. We can speed things up by utilizing all the computational power available to us through H2O.
+
+```{r}
+# Initialize h2o on port 54321. The ntreads argument indicates how many CPU's to use (-1 meaning ALL available cpu's)
+h2o.init(port = 54321,nthreads = -1)
+
+## optional: connect to a running H2O cluster
+#h2o.init(ip="mycluster", port=54321) 
+```
+
+You can view the h2o session at (http://localhost:54321/flow/index.html) in the browser of your local machine
+
+The next step is to *load the data* into H2O, which is accomplished as follows
+
+```{r, echo = FALSE}
+train_h2o<-h2o.importFile("train.csv")
+test_h2o<-h2o.importFile("test.csv")
+``` 
+
+If you are running this in RStudio, you can observe in the `Environment` pane (usually on the right top corner by default) that the size of these two H2O frames is minimal compared to original data. H2O has actually loaded the data into its Java Virtual Machine and is only making a reference object to it available within the R session. Data loaded into H2O can again be observed in the GUI at (http://localhost:54321/flow/index.html) using the `getFrames` function there or alternatively navigating to `Data` -> `List all Frames` in the menu bar at the top of the page. Since H2O compresses the objects, the size of the `train` and `test` data frame in the H2O session are 22MB and 5MB respectively
+
+---
+
+#### Building models within H2O
+Let us begin by building a *Random Forest Model* again within H2O and see how quickly we can model and how accurately we can predict. This time it would be called a *Distributed Random Forest* model given H2O's scalable architecture. 
+
+Before we begin building our model, we need to factorize the labels in our dataset
+
+```{r}
+train_h2o[,1]<-as.factor(train_h2o[,1])
+test_h2o[,1]<-as.factor(test_h2o[,1])
+```
+
+Once that is done, setting up a *Distributed Random Forest* model is as simple as below. We will again use only the first 1000 images for training purpose to save time computing the model. The parameters for the model would be almost the same as the best model previously built in `CARET` but this time we will also perform a 5-fold cross validation to get a good estimate of the error of the model.
+
+```{r,echo=FALSE, eval=FALSE}
+model.rf.h2o <- h2o.randomForest(x = 2:785,  # column numbers for predictors
+                   y = 1,   # column number for label
+                   training_frame  = train_h2o[1:1000,], # data in H2O format
+                   nfolds = 5, # number of cross validation folds
+                   ntrees = 300, # number of trees to grow
+                   seed =1000, # setting the seed for randomness
+                   mtries = 50 # number of variables to consider at each split
+                   ) 
+
+h2o.saveModel(model.rf.h2o,getwd())
+
+```
+
+You can follow the progress of the model at the GUI above at (http://localhost:54321/flow/index.html) navigating to `Admin`-> `Jobs` and clicking on the `DRF`(Distributed Random Forest) model. Training for this dataset with the 5 fold cross validation took about 2 minutes on my machine. Using more data would take longer time, but likely improve accuracy
+
+The parameters and information about the model generated can be accessed either via the GUI or within RStudio as follows
+
+```{r}
+model.rf.h2o<-h2o.loadModel(paste0(getwd(),"/DRF_model_R_1496539619488_2"))
+model.rf.h2o
+
+```
+
+From the `Cross-Validation Metric Summary` table printed above we can see the model is expected to produce an accuracy rate of 89.48% on average, with a standard deviation of 1.6%.
+
+#### Prediction using Test set
+To predict the results from the model, we can use the `h2o.predict` function
+
+```{r}
+## Using the RF model for predictions
+h2o_rf_yhat_test <- h2o.predict(model.rf.h2o, test_h2o)
+
+## Converting H2O format into data frame
+df_rf_yhat_test <- as.data.frame(h2o_rf_yhat_test)
+
+## Getting test labels
+test_labels<-unlist(as.data.frame(test_h2o[,1]))
+
+## Table of predictions
+table(test_labels,df_rf_yhat_test[,1])
+
+## Accuracy of predictions
+Acc<-sum(diag(table(test_labels,df_rf_yhat_test[,1])))/length(test_labels)
+print(paste0("Accuracy = ",Acc*100,"%"))
+```
+
+We can see that our accuracy on test data is very close to the estimated accuracy of the model of about 90%. This indicates the model has generalized well.
+
+---
+
+### Neural Network Model on H2O
+Our final step would be to build a Neural network model on H2O and see how it performs compared to the other models we have built thus far. A good reference guide for Deep Learning and other neural networks on H2O is [this](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=6&ved=0ahUKEwid9ZP03qPUAhWGMyYKHfE3Cs4QFghEMAU&url=https%3A%2F%2Fraw.githubusercontent.com%2Fh2oai%2Fh2o%2Fmaster%2Fdocs%2Fdeeplearning%2FDeepLearningBookletV1.pdf&usg=AFQjCNFSQSTIrf9XALEreFeLFVqGgEVcQA&sig2=Rxo3e64YTxfBC5njVQ7W9Q)
+
+The code for setting up a Neural Network is very similar to what we did for the *Distributed Random Forest Model* with the difference only being Neural Network specific parameters.
+
+Here, we will construct a 3 hidden layer neural network with 300,150 and 50 cells each. We will also perform a cross validation to get a good estimate of our training error as we did with the *Distributed Random Forest Model* . The activation function used for processing the signal generated by the network is a *Rectifier* which is also known as *ReLu* in some other packages. 
+
+Given the complexity of the network, we would need a lot more training data to avoid over-fitting our model to the data. We will therefore be using all the 60,000 images available to us in the `training set` to train this model.
+
+```{r, echo=FALSE, eval=FALSE}
+model.nn.h2o <-
+  h2o.deeplearning(x = 2:785,  # column numbers for predictors
+                   y = 1,   # column number for label
+                   training_frame  = train_h2o, # data in H2O format
+                   activation = "Rectifier", # or 'RectifierWithDropout'
+                   #input_dropout_ratio = 0.2, # % of inputs dropout
+                   #hidden_dropout_ratios = c(0.5,0.5,0.5), # % for nodes dropout
+                   hidden = c(300,150,50), # three layers of 50 nodes
+                   epochs = 30,  # number of passes of data
+                   variable_importances = TRUE, # variable importance
+                   nfolds = 5 ) # cross validation folds
+
+h2o.saveModel(model.nn.h2o,getwd())
+
+```
+
+As before you can observe the training of the model from within the RStudio console or at the GUI (http://localhost:54321/flow/index.html) navigating to `Admin`-> `Jobs` and clicking on the `Deep Learning` model. Training for this dataset with 5 fold cross validation, using all 60,000 images from the training set took about 20 minutes on my machine, which is significantly faster compared to Random Forest model which took 2 minutes to train on just 1,000 images.
+
+The parameters and information about the model generated can be accessed either via the GUI or within RStudio as follows
+
+```{r}
+
+model.nn.h2o<-h2o.loadModel(paste0(getwd(),"/DeepLearning_model_R_1496539619488_5"))
+model.nn.h2o@model$cross_validation_metrics_summary
+
+```
+
+As can be seen from the Cross Validation Metrics table above, the final model is expected to have an accuracy of 96.65% on average.
+
+#### Prediction using Test data
+To predict the results from this model, we can use the `h2o.predict` function and check if the expected accuracy holds up against unseen `test` data
+
+```{r}
+## Using the RF model for predictions
+h2o_nn_yhat_test <- h2o.predict(model.nn.h2o, test_h2o)
+
+## Converting H2O format into data frame
+df_nn_yhat_test <- as.data.frame(h2o_nn_yhat_test)
+
+## Getting test labels
+test_labels<-unlist(as.data.frame(test_h2o[,1]))
+
+## Table of predictions
+table(test_labels,df_nn_yhat_test[,1])
+
+## Accuracy of predictions
+Acc<-sum(diag(table(test_labels,df_nn_yhat_test[,1])))/length(test_labels)
+print(paste0("Accuracy = ",Acc*100,"%"))
+
+```
+
+The `Accuracy` metric from the `test` data above indicates that the model in this case has performed better on our test data than the mean CV metrics predicted. The error on `test` data is 2.69% compared to predicted error of 3.35%. **The world record for error rate on this `test` dataset is currently 0.83%** It would be a good challenge to modify and train the network to come close and beat the world record!
+
+Finally, H2O based neural networks also allow us to make certain plots
+
+*Scoring History*
+```{r}
+plot(model.nn.h2o)
+```
+
+*Top 10 important variables*
+```{r}
+h2o.varimp_plot(model.nn.h2o,num_of_features = 10)
+```
+
+
+---
+
+### Summary
+In this case we looked at classifying a dataset of Handwritten Digits from the MNIST database. This was a multiclass classification problem with 60,000 training images and 10,000 test images.
+
+- We first ran a *Random Forest* model using the `CARET` package. This model had an estimated error of 10.9% but generated an error of 11.38% on our test data. Notably this model was trained only on 1000 training images and it's performance and fit could have been improved with more data and cross validation. 
+- For our second run, we generated a *Distributed Random Forest* model using the scalable machine learning library provided by `H2O` package. The model error estimate here was 10.52% when it was trained on 1000 training images with a 5 fold cross validation. The error on the test set was also a similar 10.78%. 
+- For our last run, we generated a *Deep Learning* model using a 3 layer Neural Network constructed again using the scalable machine learning library `H2O`. The model for this run was constructed using all the training data available with a 5 fold cross validation. The estimated model error was 3.35% and the final test set error on this was 2.69%.
+
