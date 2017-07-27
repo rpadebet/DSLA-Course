@@ -121,7 +121,7 @@ flights_2014 %>%filter(DISTANCE<2000)%>%
 )
 
 
-# Database Query (takes 100X long time but no memory is used locally )
+# Database Query (takes 10X long time but no memory is used locally )
 
 
     result_db<-flts_2014_db %>%
