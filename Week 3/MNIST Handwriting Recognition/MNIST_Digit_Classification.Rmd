@@ -68,6 +68,7 @@ Once the necessary packages are loaded, we can begin working on our dataset by f
 #### Loading the data
 To load the data into memory we use `data.table's` fast `fread` function as below
 ```{r}
+train<-read.csv("train.csv")
 train<-fread(input = "train.csv")
 test<-fread(input = "test.csv")
 ```

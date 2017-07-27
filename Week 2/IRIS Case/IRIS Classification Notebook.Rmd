@@ -302,7 +302,7 @@ print(model.rpart)
 Let us now plot the tree and see how the classification tree looks
 ```{r}
 plot(model.rpart$finalModel)
-text(model.rpart$finalModel)
+model.rpart$finalModel
 ```
 
 Let us produce a prettier tree
@@ -330,11 +330,11 @@ confusionMatrix(predict(object = model.rpart$finalModel,newdata = trainset[,1:4]
 Let us predict on the test data set and see how the `rpart` model does
 ```{r}
 ## Checking accuracy on the testdata set we created initially
-pred_test<-predict(object = model.rpart$finalModel,
+pred_test1<-predict(object = model.rpart$finalModel,
                    newdata = testset[,1:4],
                    type="class")
 
-confusionMatrix(pred_test,testset$Species)
+confusionMatrix(pred_test1,testset$Species)
 ```
 Our accuracy on the test set is worse than our accuracy on the training set. This is usually to be expected. If the training set accuracy differs from the test set accuracy by a lot, usually it is an indication of model overfitting to the training set.
 
@@ -424,7 +424,7 @@ Let us now plot the observations and see which flowers were actually misclassifi
 *Please note that changing the model now after we have had it look at the test data isn't recommended or proper datascience*
 
 ```{r}
-model_correct <- testset$Species==pred_test
+model_correct <- testset$Species==pred_test1
 
 misclassify<- ggplot(testset) + 
     geom_point(aes(Petal.Length, Sepal.Length, colour = model_correct, shape = Species), size = 2.5) + 

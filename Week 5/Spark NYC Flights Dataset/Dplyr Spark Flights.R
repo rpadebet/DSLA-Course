@@ -14,6 +14,9 @@ dim(airlines)
 
 ## Loading the data into Spark
 sc <- spark_connect(master="local")
+
+sc <- spark_connect(master="spark://54.174.31.86:4040")
+
 flights <- copy_to(sc, flights, "flights")
 airlines <- copy_to(sc, airlines, "airlines")
 src_tbls(sc)
