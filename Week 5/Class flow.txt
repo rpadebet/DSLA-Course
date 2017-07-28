@@ -1,0 +1,43 @@
+1. Introduction to nycflights13 dataset
+
+    1. explore
+    2. plot
+    3. fit a model linear_regression(gain ~ distance + depdelay + uniquecarrier)
+
+2. Introduction to relational databases
+
+    1. MySql or Postgres
+    2. SQL query language
+    3. Get the dataset from another database
+    4. explore
+    5. plot
+    6. fit
+    7. Store the dataset in our local database
+    8. explore
+    9. plot
+    10. fit <break time>
+
+3. Introduction to big data technologies
+
+    1. HDFS
+    2. Map Reduce
+    3. HIVE
+    4. Spark
+
+4. Setup EMR cluster on AWS
+
+    1. Install Rstudio Server
+    2. Install the packages necessary
+    3. Download the 1980-2012 dataset <lunch time as this takes time>
+    4. Store it in HDFS
+    5. Query using HIVE tables
+    6. Launch Spark
+    7. Explore the dataset using spark/rstudio server
+    8. Plot the dataset
+    9. fit the same model
+    10. Convert dataset to paraquet file and store it in S3
+    11. Access the file from S3 <break time>
+
+5. Student Presentations for last week case
+6. Introduce the NYC taxis data set and ask students to work on it for case study
+7. Ask them to get started on their individual projects

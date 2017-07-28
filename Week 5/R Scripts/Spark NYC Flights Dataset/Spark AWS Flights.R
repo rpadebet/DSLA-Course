@@ -13,7 +13,7 @@ config <- spark_config()
 sc <- spark_connect(master = "yarn-client", config = config)
 
 
-# aws s3 data
+# read from aws s3 data
 tbl <- spark_read_parquet(sc,"s3://us-east-1.elasticmapreduce.samples/flightdata/input/")
 
 # Cache flights Hive table into Spark

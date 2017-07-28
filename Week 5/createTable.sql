@@ -1,0 +1,33 @@
+CREATE TABLE flights_2008 (
+"year" INTEGER,
+"month" INTEGER,
+"dayofmonth"   INTEGER,
+"dayofweek"   INTEGER,
+"deptime"   INTEGER, 
+"crsdeptime"   INTEGER,
+"arrtime"   INTEGER,
+"crsarrtime"   INTEGER,
+"uniquecarrier"   TEXT,
+"flightnum"   INTEGER, 
+"tailnum"   TEXT ,
+"actualelapsedtime"   INTEGER,
+"crselapsedtime"   INTEGER,
+"airtime"   INTEGER,
+"arrdelay"   INTEGER,
+"depdelay"   INTEGER,
+"origin"   TEXT,
+"dest"    TEXT,
+"distance"   INTEGER,
+"taxiin"   INTEGER,          
+"taxiout"   INTEGER,
+"cancelled"   INTEGER,
+"cancellationcode"   TEXT,
+"diverted"   INTEGER,
+"carrierdelay"   INTEGER,    
+"weatherdelay"   INTEGER,
+"nasdelay"   INTEGER,
+"securitydelay"   INTEGER,
+"lateaircraftdelay"   INTEGER);
+
+
+COPY flights_2008 FROM '/home/rohit/Desktop/2008.csv' WITH (DELIMITER ',',format CSV, NULL 'NA', HEADER TRUE);
