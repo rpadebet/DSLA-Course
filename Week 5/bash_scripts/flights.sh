@@ -1,15 +1,14 @@
 #!/bin/bash
 
 # check for master node
-
 IS_MASTER=false
 if grep isMaster /mnt/var/lib/info/instance.json | grep true;
 then
-$IS_MASTER = true
+IS_MASTER = true
 fi
 
-if [ "$IS_MASTER" = true ] ; then
-sudo mkdir /tmp/flights
+if[ "$IS_MASTER" -eq true ];
+then sudo mkdir /tmp/flights
 sudo chmod -R 777 /tmp/flights
 
 # Begin Downloading the data
@@ -23,7 +22,7 @@ sudo chmod -R 777 /tmp/flights
 	echo "$(date) $i Unzip"
 	sudo bunzip2 /tmp/flights/$fnam
     done
-
+    
 # Download airline carrier data
     echo "Beginning download of carrier data ..."
     sudo wget -O /tmp/airlines.csv http://www.transtats.bts.gov/Download_Lookup.asp?Lookup=L_UNIQUE_CARRIERS
@@ -33,5 +32,5 @@ sudo chmod -R 777 /tmp/flights
 
 # Download the hadoop script from S3
     aws s3 cp s3://rohit-folder/hadoop_script.sh /home/hadoop/
-fi
+fi 
 # Master Node

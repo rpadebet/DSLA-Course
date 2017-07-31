@@ -38,7 +38,7 @@ then
     hive -f /home/hadoop/hiveSql.sql
 
     echo "hive completed"
-    
+
 fi
 
 echo "Exited Master and exiting this step"
