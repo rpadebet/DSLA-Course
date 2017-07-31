@@ -2,7 +2,7 @@ library(RPostgreSQL)
 library(dplyr)
 
 myPostgres<- src_postgres(dbname="spam",
-                          host="rohit-lubuntu",
+                          host="rohit-lubuntu",#192.168.15.254
                           port=5432,
                           user="rohit",
                           password="rohit123")

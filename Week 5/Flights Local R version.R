@@ -21,6 +21,7 @@ head(airports)
 head(airlines)
 
 glimpse(flights)
+str(flights)
 glimpse(airports)
 glimpse(airlines)
 

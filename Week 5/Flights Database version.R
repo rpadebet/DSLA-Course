@@ -59,7 +59,7 @@ flights_bestworst.db
 # There is a workaround within MySQL, but let us just move this to our local Postgres database
 library(RPostgreSQL)
 myPostgres<- src_postgres(dbname="spam",
-                          host="rohit-lubuntu",
+                          host="192.168.15.254",#192.168.15.254
                           port=5432,
                           user="rohit",
                           password="rohit123")

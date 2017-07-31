@@ -41,3 +41,5 @@
 5. Student Presentations for last week case
 6. Introduce the NYC taxis data set and ask students to work on it for case study
 7. Ask them to get started on their individual projects
+
+

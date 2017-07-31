@@ -6,7 +6,7 @@ install.packages("rparkling")
 install.packages("devtools")
 install.packages("nycflights13")
 install.packages("readr")
-install.packages("RPostgresql")
+install.packages("RPostgreSQL")
 install.packages("RMySQL")
 install.packages("ggthemes")
 
