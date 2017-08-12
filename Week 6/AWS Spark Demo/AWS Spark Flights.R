@@ -19,10 +19,10 @@ Sys.setenv(SPARK_HOME="/usr/lib/spark") # on aws cluster
 
 config <- list(
     "spark.dynamicAllocation.enabled" = "false",
-    "sparklyr.shell.driver-memory"= "1G",
+    "sparklyr.shell.driver-memory"= "12G",
     "sparklyr.shell.num-executors" = 3,
-    "sparklyr.shell.executor-memory" = "3G",
-    "sparklyr.shell.executor-cores" = 2
+    "sparklyr.shell.executor-memory" = "12G",
+    "sparklyr.shell.executor-cores" = 1
 )
 
 sc <- spark_connect(master = "yarn-client", config = config) # on aws cluster
