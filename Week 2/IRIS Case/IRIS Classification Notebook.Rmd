@@ -1,9 +1,9 @@
 ---
 title: 'Case Study: IRIS Classification'
 output:
+  pdf_document: default
   html_notebook: default
   html_document: default
-  pdf_document: default
 ---
 
 ### Hello World of Machine Learning
@@ -33,8 +33,8 @@ Arranging your data in this way makes it easier to work with because you have a 
 [Refer][2]
 
 ```{r}
-install.packages("caret")
-install.packages("tidyr")
+# install.packages("caret")
+# install.packages("tidyr")
 ```
 
 ---
@@ -101,9 +101,8 @@ We see here that the data has no names for the columns (they are assigned names 
 # Assigning meaningful column names
 colnames(iris_filedata)<-c("Sepal.Length","Sepal.Width","Petal.Length","Petal.Width","Species")
 head(iris_filedata,5)
-```
 
----
+```
 
 #### *Splitting the Data into Training and Testing Sets*
 This is one of the most important steps and concepts in Machine Learning. Before we do any meaningful work and learn from the dataset available to us, we need to split the dataset into `training set` and `testing set` and sometimes into a third `validation set`.
@@ -117,7 +116,7 @@ This is one of the most important steps and concepts in Machine Learning. Before
 A good discussion of this topic can be found [here](https://stats.stackexchange.com/questions/19048/what-is-the-difference-between-test-set-and-validation-set)
 
 ```{r}
-# Load the Caret package which allows us to partition the data
+#Load the Caret package which allows us to partition the data
 library(caret)
 # We use the dataset to create a partition (80% training 20% testing)
 index <- createDataPartition(iris_filedata$Species, p=0.80, list=FALSE)
@@ -129,7 +128,6 @@ trainset <- iris_filedata[index,]
 
 Now that we have loaded and prepared our data for analysis, we are ready to move onto the next step which is `Exploring, Summarizing, Plotting and Understanding the Data`. 
 
----
 
 ### Explore the Data
 *Since we are dealing here with a clean and small dataset we are able to avoid the step of `Cleaning the data` which typically consumes a majority of the data scientists' time. *
@@ -143,11 +141,11 @@ We explore the data to:
 - Think about and source other data which maybe useful in answering the question
 - Get a preliminary feel for the types of models we think would best fit the data
 
-----
 
 #### Summarizing the Data
 
 We begin by getting an idea of the attributes, dimensions and size of the data we are dealing with
+
 ```{r}
 # Dimensions of the data
 dim(trainset)
@@ -169,12 +167,10 @@ summary(trainset)
 levels(trainset$Species)
 ```
 
----
 
 ### *Visualization and Exploration*
 The advantage of a tool such as RStudio is that it allows a data scientist to creatively and quickly explore data via visualization. There are many powerful packages and tools in R such as `GGPLOT2`, `PLOTLY` etc which can be used to explore data as well as produce publishing quality plots to be used in reports and presentations. Here we will use some of these to explore and understand our dataset better
 
----
 
 #### *Base R plots*
 We begin by using some base R plots to understand the distribution and attributes
@@ -200,11 +196,12 @@ par(mfrow=c(1,4))
 featurePlot(x=trainset[,1:4], y=trainset[,5], plot="box")
 ```
 
----
 
 #### *Grammer of Graphics GGPLOTs*
 ggplot2 is a very powerful package built on the concept of `"Grammar of Graphics (gg)"`. It allows you to **build** a plot following a particular syntax. It produces more aesthetically pleasing, more powerful plots than base graphics using more compact code for plot of similar complexity. You can read and understand more about ggplot [here](https://opr.princeton.edu/workshops/Downloads/2015Jan_ggplot2Koffman.pdf) and [here](http://tutorials.iq.harvard.edu/R/Rgraphics/Rgraphics.html).
 A cheatsheet for ggplot is available [here](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
+
+To understand the visualization techniques, best practices and how to build plots with ggplot using the Grammar of Graphics ideas, refer the link below which is an excellent tutorial on [Visualization](http://socviz.co/index.html#preface) 
 
 Below we will plot some similar yet aesthetically pleasing plots using ggplot2
 ```{r}
@@ -218,6 +215,8 @@ g <- ggplot(data=trainset, aes(x = Petal.Length, y = Petal.Width))
 print(g)
 ```
   
+ You see above that unlike regular R plot() function, calling `ggplot()` by itself produces no output. In ggplot if define the canvas first loading the data and then build layers of objects one by one. Below we add a `geom` point to plot the data points. We modify the axes labels and titles. We can also add a linear regression line through the points using yet another `geom` called `geom_smooth`. It computes the linear regression line and the errors before plotting it through a simple command 
+  
 ```{r}
 g <-g + 
     geom_point(aes(color=Species, shape=Species)) +
@@ -228,6 +227,9 @@ g <-g +
 
 print(g)
 ```
+
+In the next chart we use a `boxplot` geomand summarize the statistic `mean` to display it on top the box plot.
+
 ```{r}
 ## Box Plot
 box <- ggplot(data=trainset, aes(x=Species, y=Sepal.Length)) +
@@ -238,6 +240,7 @@ box <- ggplot(data=trainset, aes(x=Species, y=Sepal.Length)) +
 
 print(box)
 ```
+We can also use themes to make our plots look professional
 
 ```{r}
 library(ggthemes)
@@ -310,9 +313,11 @@ Let us produce a prettier tree
 ```{r}
 ## We use the Rattle package to produce some pretty tree plots
 # install.packages("rattle")
-library(rattle)
+# #library(rattle)
+library(rpart.plot)
 # install.packages("rpart.plot")
-fancyRpartPlot(model.rpart$finalModel)
+#fancyRpartPlot(model.rpart$finalModel)
+rpart.plot(model.rpart$finalModel)
 
 ```
 
@@ -337,8 +342,6 @@ pred_test1<-predict(object = model.rpart$finalModel,
 confusionMatrix(pred_test1,testset$Species)
 ```
 Our accuracy on the test set is worse than our accuracy on the training set. This is usually to be expected. If the training set accuracy differs from the test set accuracy by a lot, usually it is an indication of model overfitting to the training set.
-
----
 
 #### *Random Forest Algorithm*
 Produce a model which averages the predictions from many such classification trees. This class of algo's uses a variation on the technique called [Bagging](https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/) using different attributes for growing each tree.
@@ -375,8 +378,6 @@ pred_test<-predict(object = model.rf$finalModel,newdata = testset[,1:4],type="cl
 confusionMatrix(pred_test,testset$Species)
 ```
 Even though we were able to improve our accuracy on the training set, on the test set we still are misclassifying two observations. We will next consider another class of Algorithm which we hope would improve our testset accuracy
-
----
 
 #### *Gradient Boosting Method*
 This class of ML Algorithms uses a technique called `BOOSTING` where we still grow decision classification trees, but each successive tree is grown with an intent to classify the missclassified data from the previous tree correctly.
@@ -415,7 +416,6 @@ confusionMatrix(pred_test,testset$Species)
 ```
 We still end up with the same testset accuracy despite using more and more sophisticated Algos!
 
----
 
 **Plotting Misclassified Observations**
 
@@ -436,7 +436,6 @@ We can see they are misclassified because the `Petal.Length` attributes for the 
 
 Let us now try another totally different class of model and see if we can improve on our results
 
----
 
 #### *K Means Clustering Model*
 
@@ -474,7 +473,6 @@ plot(iris[c("Sepal.Length", "Sepal.Width")], col=irisCluster$cluster)
 points(irisCluster$centers[,c("Sepal.Length", "Sepal.Width")], col=1:3, pch=8, cex=2)
 ```
 
----
 
 #### *Linear Discriminant Analysis*
 Our last model will be the model to explain which Ronald Fisher originally used the Iris dataset.
@@ -513,7 +511,6 @@ confusionMatrix(pred_test,testset$Species)
 ```
  Finally we get a better classification than what we had previously!
  
----
 
 ### *Summarizing the Models*
  
@@ -530,7 +527,6 @@ summary(results)
 dotplot(results)
 ```
 
----
 
 ### Further Reading Assignment
 A technique being widely employed in Machine Learning to improve the accuracy of models is Ensembling or Stacking of different models to produce a super model. *Random Forest and Gradient Boosted Method use a similar such technique employed on similar kind of trees.* 
@@ -541,7 +537,6 @@ Ensembling is a very popular and effective technique that is very frequently use
 
 - A package which makes this convenient in R while using `CARET` can be found [here](https://cran.r-project.org/web/packages/caretEnsemble/vignettes/caretEnsemble-intro.html)
 
----
 
  [1]:http://machinelearningmastery.com/machine-learning-in-r-step-by-step/
  [2]:https://blog.rstudio.org/2014/07/22/introducing-tidyr/ "Introduction to tidyr"
