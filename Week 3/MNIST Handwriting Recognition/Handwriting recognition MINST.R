@@ -7,25 +7,29 @@ h2o.init(port = 54321,nthreads = -1)
 #'
 #' CSV training set http://www.pjreddie.com/media/files/mnist_train.csv
 #' CSV test set http://www.pjreddie.com/media/files/mnist_test.csv
-
+save_path=c("/Users/rohitpittu/R Projects/DSLA Course/Week 3/MNIST Handwriting Recognition/")
+save_path2=c("~/Downloads/MINST/")
 
 download.file("http://www.pjreddie.com/media/files/mnist_train.csv",
-                "~/Downloads/MINST/train.csv")
+                paste0(save_path,"train.csv"))
 
 download.file("http://www.pjreddie.com/media/files/mnist_test.csv",
-              "~/Downloads/MINST/test.csv")
+              paste0(save_path,"test.csv"))
 
 # Reading files into local memory
 train<-fread(input = "train.csv")
 test<-fread(input = "test.csv")
 
-
+#Take the 10th row
+train[10,]
 # Plotting the images
 # Create a 28*28 matrix with pixel color values
 m = matrix(unlist(train[10,-1]), nrow = 28, byrow = TRUE)
 
 # Plot that matrix
 image(m,col=grey.colors(255))
+
+
 
 # reverses (rotates the matrix)
 rotate <- function(x) t(apply(x, 2, rev)) 
@@ -43,8 +47,8 @@ lapply(1:6,
 par(mfrow=c(1,1)) # set plot options back to default
 
 # Reading files in H2O
-train_h2o<-h2o.importFile("Downloads/MINST/train.csv")
-test_h2o<-h2o.importFile("Downloads/MINST/test.csv")
+train_h2o<-h2o.importFile()paste0(save_path,"train.csv")
+test_h2o<-h2o.importFile(paste0(save_path,"test.csv"))
 # Deep neural network model
 
 train_h2o[,1]<-as.factor(train_h2o[,1])

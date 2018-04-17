@@ -1,9 +1,9 @@
 ---
 title: 'Case Study: MNIST Handwriting Recognition'
 output:
-  html_notebook: default
-  html_document: default
   pdf_document: default
+  html_document: default
+  html_notebook: default
 ---
 
 ### Introduction
@@ -15,7 +15,6 @@ In this case we're going to train a model to look at images and predict what dig
 
 More details about the dataset, including algorithms that have been tried on it and their levels of success, can be found at http://yann.lecun.com/exdb/mnist/index.html.
 
----
 
 ### Dataset
 The dataset is available at at many places throughout the internet in various forms. In our case let us download the files from pjreddie's website or kaggle, since these two sources provide csv files for train and test set separately which are easily processed.
@@ -36,7 +35,6 @@ Each image is 28 pixels in height and 28 pixels in width, for a total of 784 pix
 
 Both datasets have 785 columns. The first column is an integer indicating the label of the digit drawn by the user. The rest of the columns contain the pixel-values of the associated image.
 
----
 
 ### Installing the required packages
 We will introduce couple of new packages as part of this case. We are already familiar with the great `caret` package we used in the `Leaf Classification Case` earlier. Here we will introduce two more very useful packages `data.table` and `h2o`.
@@ -61,7 +59,6 @@ library(h2o)
 library(data.table)
 ```
 
----
 
 ### Loading and Exploring the dataset
 Once the necessary packages are loaded, we can begin working on our dataset by first loading the data into memory and then exploring it.
@@ -93,12 +90,12 @@ You can load the stucture of any data set using the `str` function and observe h
 
 
 ##### Sample Data
-```{r}
+```{r,eval=FALSE,echo=FALSE}
 head(train)
 ```
 The first column `V1` in the data is the *label* and the rest of the 784 columns indicate the pixel density
 
----
+
 
 #### Plot the Data
 Since these are known to be images, we can plot the first few images in the `train` set to see how they appear
@@ -135,7 +132,7 @@ par(mfrow=c(1,1)) # set plot options back to default
 
 The images in this dataset are highly processed using some other image manipulation softwares to scale and center these images exactly in order to be consistently read by the machine. If we are to use our own handwritten examples to train our model, we would also need to perform similar sort of image manipulations involving conversion to grayscale, centering, cropping, rotating and scaling.
 
----
+
 
 ### Modeling the data
 Now that we understand how the data is structured and stored in our tables, we can begin building machine learning models to learn the patterns in the `train` data. These models can later be used to predict and compare with the labels in the `test` data.
@@ -169,11 +166,14 @@ model.rf <- train(y ~ .,
              metric = 'Accuracy',allowParallel = TRUE
              )
 
+saveRDS(model.rf,"model.rf")
+
 ```
 
 **NOTE: The above model would take some time to run on most machines**
 
-```{r}
+```{r, echo=FALSE}
+model.rf<-readRDS(file ="model.rf")
 model.rf$finalModel
 ```
 
@@ -181,7 +181,7 @@ model.rf$finalModel
 #### Prediction using Test set
 Next we look at how the model performed againt some of the test set
 
-```{r}
+```{r, cache=T, eval=FALSE}
 
 results <- predict(model.rf$finalModel, newdata = head(inTest, 1000))
 confusionMatrix(results, head(inTest$y, 1000))
@@ -191,7 +191,7 @@ confusionMatrix(results, head(inTest$y, 1000))
 
 As can be seen in the results above, while the OOB predicted error rate of the model from the training set alone was about 10%, the error rate on the test set was about 15%. We can imporve upon these results by using the full dataset and optimizing tuning parameters available to us, but that would probably take computational time totalling in hours. We will leave that exercise to those interested in such an effort.
 
----
+
 
 ### H2O based Models
 
@@ -216,7 +216,7 @@ test_h2o<-h2o.importFile("test.csv")
 
 If you are running this in RStudio, you can observe in the `Environment` pane (usually on the right top corner by default) that the size of these two H2O frames is minimal compared to original data. H2O has actually loaded the data into its Java Virtual Machine and is only making a reference object to it available within the R session. Data loaded into H2O can again be observed in the GUI at (http://localhost:54321/flow/index.html) using the `getFrames` function there or alternatively navigating to `Data` -> `List all Frames` in the menu bar at the top of the page. Since H2O compresses the objects, the size of the `train` and `test` data frame in the H2O session are 22MB and 5MB respectively
 
----
+
 
 #### Building models within H2O
 Let us begin by building a *Random Forest Model* again within H2O and see how quickly we can model and how accurately we can predict. This time it would be called a *Distributed Random Forest* model given H2O's scalable architecture. 
@@ -249,7 +249,7 @@ You can follow the progress of the model at the GUI above at (http://localhost:5
 The parameters and information about the model generated can be accessed either via the GUI or within RStudio as follows
 
 ```{r}
-model.rf.h2o<-h2o.loadModel(paste0(getwd(),"/DRF_model_R_1496539619488_2"))
+model.rf.h2o<-h2o.loadModel(paste0(getwd(),"/DRF_model_R_1523753883593_4"))
 model.rf.h2o
 
 ```
@@ -279,7 +279,7 @@ print(paste0("Accuracy = ",Acc*100,"%"))
 
 We can see that our accuracy on test data is very close to the estimated accuracy of the model of about 90%. This indicates the model has generalized well.
 
----
+
 
 ### Neural Network Model on H2O
 Our final step would be to build a Neural network model on H2O and see how it performs compared to the other models we have built thus far. A good reference guide for Deep Learning and other neural networks on H2O is [this](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=6&ved=0ahUKEwid9ZP03qPUAhWGMyYKHfE3Cs4QFghEMAU&url=https%3A%2F%2Fraw.githubusercontent.com%2Fh2oai%2Fh2o%2Fmaster%2Fdocs%2Fdeeplearning%2FDeepLearningBookletV1.pdf&usg=AFQjCNFSQSTIrf9XALEreFeLFVqGgEVcQA&sig2=Rxo3e64YTxfBC5njVQ7W9Q)
@@ -313,7 +313,7 @@ The parameters and information about the model generated can be accessed either 
 
 ```{r}
 
-model.nn.h2o<-h2o.loadModel(paste0(getwd(),"/DeepLearning_model_R_1496539619488_5"))
+model.nn.h2o<-h2o.loadModel(paste0(getwd(),"/DeepLearning_model_R_1523753883593_6"))
 model.nn.h2o@model$cross_validation_metrics_summary
 
 ```
@@ -342,7 +342,7 @@ print(paste0("Accuracy = ",Acc*100,"%"))
 
 ```
 
-The `Accuracy` metric from the `test` data above indicates that the model in this case has performed better on our test data than the mean CV metrics predicted. The error on `test` data is 2.69% compared to predicted error of 3.35%. **The world record for error rate on this `test` dataset is currently 0.83%** It would be a good challenge to modify and train the network to come close and beat the world record!
+The `Accuracy` metric from the `test` data above indicates that the model in this case has performed better on our test data than the mean CV metrics predicted. The error on `test` data is 2.65% compared to predicted error of 3.35%. **The world record for error rate on this `test` dataset is currently 0.83%** It would be a good challenge to modify and train the network to come close and beat the world record!
 
 Finally, H2O based neural networks also allow us to make certain plots
 

@@ -1,11 +1,11 @@
 ---
 title: "RStudio on AWS"
 author: "Rohit Padebettu"
-date: "5/21/2017"
+date: "4/15/2018"
 output:
-  pdf_document: default
-  html_document: default
   word_document: default
+  html_document: default
+  pdf_document: default
 ---
 
 ## RStudio in the Cloud
