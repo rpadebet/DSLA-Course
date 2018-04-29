@@ -1,8 +1,9 @@
 # Topic Modeling using Latent Dirichlet Allocation (LDA)
+# https://www.tidytextmining.com/topicmodeling.html
 library(topicmodels)
 
 # Load the Tweet Document Term Matrix
-tweetDTM<-readRDS(file="./DSLA Course/Week 4/tweetDTM")
+tweetDTM<-readRDS(file="./tweetDTM")
 
 # Model the topics
 tweetDTM.new<-tweetDTM[rowSums(as.matrix(tweetDTM))>0,]
@@ -64,10 +65,11 @@ inspect(tweetDTM.test)
 # Apply model to new test data using posterior function
 tweetCorpus.new.topics <- posterior(object = ldaTopics,newdata = tweetDTM.test)
 
+
 # Get probabilities of topic for each document
 tweetCorpus.new.topics$topics
 apply(tweetCorpus.new.topics$topics, 1, which.max)
 
-tweetDF.new$text[c(27)]  
+tweetDF.new$text[c(7)]  
 tweetDF.new$text[c(8,24,36,40)]  
 

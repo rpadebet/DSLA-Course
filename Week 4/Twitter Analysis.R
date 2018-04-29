@@ -73,23 +73,30 @@ library(tm)
 # Remove some special characters like smilies to help cleaning
 tweetDF$text<-sapply(tweetDF$text,function(x) iconv(x ,to="UTF-8-MAC",sub = "" ))
 tweetCorpus <- Corpus(VectorSource(tweetDF$text))
+inspect(tweetCorpus[1:5])
 
 # Usual transformations for cleaning the test
 tweetCorpus <- tm_map(tweetCorpus, tolower)
+inspect(tweetCorpus[1:5])
 tweetCorpus <- tm_map(tweetCorpus, removePunctuation)
 tweetCorpus <- tm_map(tweetCorpus, removeNumbers)
-    removeURL <- function(x) gsub("http[[:alnum:]]*", "", x) # remove URLs
-tweetCorpus <- tm_map(tweetCorpus, removeURL)
+
+# Remove URLs using Regex
+# https://rstudio-pubs-static.s3.amazonaws.com/74603_76cd14d5983f47408fdf0b323550b846.html
+    removeURL <- function(x) gsub("^https://[a-z A-Z 0-9 ./]*", "", x) # remove URLs
+    tweetCorpus <- tm_map(tweetCorpus, removeURL)
+inspect(tweetCorpus[1:5])
+
     twtrStopWords <- c(stopwords("english"),'datascience','data','science')
 tweetCorpus <- tm_map(tweetCorpus, removeWords, twtrStopWords) # remove stop words
 
 
-inspect(tweetCorpus)
+inspect(tweetCorpus[1:5])
 
 # Create a Document Term Matrix
 tweetDTM<-DocumentTermMatrix(tweetCorpus,list(termFreq=1))
 inspect(tweetDTM)
-saveRDS(tweetDTM,"./DSLA Course/Week 4/tweetDTM")
+saveRDS(tweetDTM,"./tweetDTM")
 
 # Find frequent terms
 freqTerms<-findFreqTerms(tweetDTM,lowfreq = 10)
